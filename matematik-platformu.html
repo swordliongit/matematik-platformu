@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematik Platformu</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeece6;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #9a9890;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --blue: #185FA5; --blue-bg: #E6F1FB; --blue-text: #0C447C;
+    --green: #3B6D11; --green-bg: #EAF3DE; --green-text: #27500A;
+    --red: #A32D2D; --red-bg: #FCEBEB; --red-text: #791F1F;
+    --amber: #854F0B; --amber-bg: #FAEEDA; --amber-text: #633806;
+    --purple: #534AB7; --purple-bg: #EEEDFE; --purple-text: #3C3489;
+    --radius: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
+      --text: #e8e6de; --text2: #9a9890; --text3: #6a6864;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --blue: #378ADD; --blue-bg: #042C53; --blue-text: #B5D4F4;
+      --green: #639922; --green-bg: #173404; --green-text: #C0DD97;
+      --red: #E24B4A; --red-bg: #501313; --red-text: #F7C1C1;
+      --amber: #EF9F27; --amber-bg: #412402; --amber-text: #FAC775;
+      --purple: #7F77DD; --purple-bg: #26215C; --purple-text: #CECBF6;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
+  .container { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .ekran { display: none; }
+  .ekran.aktif { display: block; }
+  .kart { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .btn { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 0.5rem 1rem; font-size: 13px; cursor: pointer; color: var(--text); transition: background .15s; font-family: inherit; }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: var(--blue); color: var(--blue-bg); border-color: var(--blue); }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-block { width: 100%; text-align: center; padding: 0.65rem 1rem; }
+  .nav-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+  .nav-baslik { font-size: 15px; font-weight: 500; flex: 1; }
+  .ilerleme-bar-dis { background: var(--bg2); border-radius: 4px; height: 6px; overflow: hidden; margin: 6px 0; }
+  .ilerleme-bar-ic { height: 100%; background: var(--blue); border-radius: 4px; transition: width .4s; }
+  .istat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+  .istat-kart { background: var(--bg2); border-radius: var(--radius); padding: 0.85rem 1rem; text-align: center; }
+  .istat-sayi { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  .istat-label { font-size: 12px; color: var(--text2); }
+  .ders-kart { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color .15s; }
+  .ders-kart:hover { border-color: var(--border2); }
+  .ders-kart.tamamlandi { border-color: var(--green); }
+  .ders-kart.kilitli { opacity: .5; cursor: default; }
+  .ders-no { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .bilgi-kutu { background: var(--bg2); border-radius: var(--radius); padding: 0.85rem 1rem; font-size: 13px; line-height: 1.6; margin: 10px 0; }
+  .secenek-btn { width: 100%; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 0.65rem 1rem; font-size: 13px; cursor: pointer; text-align: left; color: var(--text); transition: all .15s; margin-bottom: 8px; font-family: inherit; }
+  .secenek-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--bg2); }
+  .secenek-btn.dogru { border-color: var(--green) !important; background: var(--green-bg) !important; color: var(--green-text); }
+  .secenek-btn.yanlis { border-color: var(--red) !important; background: var(--red-bg) !important; color: var(--red-text); }
+  .quiz-ilerleme { display: flex; gap: 5px; margin-bottom: 12px; }
+  .quiz-nokta { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+  .quiz-nokta.aktif { background: var(--blue); }
+  .quiz-nokta.bitti { background: var(--green); }
+  .geri-bildirim { font-size: 13px; padding: 0.65rem 1rem; border-radius: var(--radius); margin-top: 6px; }
+  .geri-bildirim.dogru { background: var(--green-bg); color: var(--green-text); }
+  .geri-bildirim.yanlis { background: var(--red-bg); color: var(--red-text); }
+  .rozet-kazanildi { background: var(--green-bg); color: var(--green-text); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; font-weight: 500; display: inline-block; }
+  .rozet-kilitli { background: var(--bg2); color: var(--text3); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; display: inline-block; }
+  .sonuc-daire { width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+  .icerik-bolum { margin-bottom: 1.25rem; }
+  .icerik-bolum h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+  .icerik-bolum p { font-size: 13px; color: var(--text2); line-height: 1.65; }
+  .sayi-dogrusu { position: relative; margin: 1.25rem 0; }
+  .sd-cubuk { height: 4px; background: var(--border); border-radius: 2px; position: relative; margin: 20px 0 8px; }
+  .sd-nokta { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 13px; height: 13px; border-radius: 50%; cursor: pointer; transition: transform .15s; }
+  .sd-nokta:hover { transform: translate(-50%, -50%) scale(1.35); }
+  .sd-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); }
+  .term-wrap { display: flex; align-items: center; gap: 16px; margin: 1rem 0; }
+  .term-cubuk { width: 18px; height: 140px; background: var(--bg2); border-radius: 9px; position: relative; overflow: hidden; border: 0.5px solid var(--border); flex-shrink: 0; }
+  .term-ic { position: absolute; bottom: 0; width: 100%; border-radius: 0 0 9px 9px; transition: height .25s, background .25s; }
+  .bs-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 1rem 0; }
+  .bs-kart { border-radius: var(--radius); padding: 0.85rem; text-align: center; cursor: pointer; transition: opacity .15s; }
+  .bs-kart:hover { opacity: 0.8; }
+  .gol-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 1rem 0; }
+  .gol-kart { border-radius: var(--radius); padding: 1rem; text-align: center; }
+  input[type=range] { width: 100%; accent-color: var(--blue); }
+  h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+  .muted { font-size: 13px; color: var(--text2); }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius); padding: 3px 8px; font-size: 12px; font-weight: 500; }
+  .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
+  .badge-green { background: var(--green-bg); color: var(--green-text); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="ekran-anasayfa" class="ekran aktif">
+  <div class="kart">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+      <div><h1>Matematik Platformu</h1><p class="muted">Sıfırdan ileri seviyeye</p></div>
+      <button class="btn" onclick="ekranGoster('ekran-istatistik')">İstatistikler</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px">
+      <span>Genel ilerleme</span><span id="genel-pct">0%</span>
+    </div>
+    <div class="ilerleme-bar-dis"><div class="ilerleme-bar-ic" id="genel-bar" style="width:0%"></div></div>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px;letter-spacing:.05em">AŞAMA 1 — SAYILAR</div>
+  <div id="ders-listesi"></div>
+  <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:1rem">Daha fazla ders yakında eklenecek</p>
+</div>
+
+<div id="ekran-ders" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
+    <div class="nav-baslik" id="ders-baslik-nav"></div>
+  </div>
+  <div id="ders-icerik"></div>
+  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="dersQuizBaslat()">Quiz'e Geç →</button>
+</div>
+
+<div id="ekran-quiz" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Çık</button>
+    <div class="nav-baslik" id="quiz-baslik-nav"></div>
+  </div>
+  <div id="quiz-icerik"></div>
+</div>
+
+<div id="ekran-sonuc" class="ekran">
+  <div class="kart" style="text-align:center;padding:2rem 1.25rem">
+    <div class="sonuc-daire" id="sonuc-daire">
+      <div style="font-size:22px;font-weight:500" id="sonuc-sayi"></div>
+      <div style="font-size:11px" id="sonuc-alt"></div>
+    </div>
+    <div style="font-size:16px;font-weight:500;margin-bottom:6px" id="sonuc-baslik"></div>
+    <p class="muted" id="sonuc-metin" style="margin-bottom:1.25rem"></p>
+    <div id="sonuc-rozet-alan" style="margin-bottom:1.25rem"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn" onclick="ekranGoster('ekran-anasayfa')">Ana Sayfa</button>
+      <button class="btn btn-primary" id="sonuc-sonraki-btn">Sonraki Ders →</button>
+    </div>
+  </div>
+</div>
+
+<div id="ekran-istatistik" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
+    <div class="nav-baslik">İstatistikler</div>
+  </div>
+  <div class="istat-grid">
+    <div class="istat-kart"><div class="istat-sayi" id="is-tamamlanan" style="color:var(--blue)">0</div><div class="istat-label">Tamamlanan ders</div></div>
+    <div class="istat-kart"><div class="istat-sayi" id="is-dogru" style="color:var(--green)">0</div><div class="istat-label">Doğru cevap</div></div>
+    <div class="istat-kart"><div class="istat-sayi" id="is-rozet" style="color:var(--amber)">0</div><div class="istat-label">Kazanılan rozet</div></div>
+  </div>
+  <div class="kart">
+    <div style="font-size:14px;font-weight:500;margin-bottom:12px">Rozetler</div>
+    <div id="rozet-listesi"></div>
+  </div>
+  <button class="btn" style="color:var(--red);border-color:var(--red);margin-top:0.5rem" onclick="sifirla()">İlerlemeyi Sıfırla</button>
+</div>
+
+</div>
+
+<script>
+var DERSLER = [
+  {
+    id:'d1', baslik:'Sayı doğrusu ve tam sayılar', renk:'#E6F1FB', renk2:'#185FA5',
+    rozet:{id:'r1', ad:'Sayı Kafası', acik:'Sayı doğrusu dersini tamamladın'},
+    icerik: function(){
+      return '<div class="kart"><div class="icerik-bolum"><h3>Sayılar nerede yaşıyor?</h3><p>Her sayı bir çizgi üzerinde bir noktadır. Bu çizgiye <strong>sayı doğrusu</strong> diyoruz. Solda küçük, sağda büyük sayılar bulunur.</p></div>'+
+      '<div class="sayi-dogrusu"><div class="sd-cubuk" id="sd1"></div><div class="sd-label"><span>-15</span><span>-5</span><span>0</span><span>10</span><span>20</span><span>37</span></div></div>'+
+      '<div class="bilgi-kutu" id="sd-acik">Noktalara tıkla, gerçek hayattan örnekleri gör.</div>'+
+      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Negatif sayılar</h3><p>Sıfırın solundaki sayılar negatiftir. -5 derece: suyun donmasına 5 derece kalmış demektir. Banka borcu, deniz seviyesinin altı, eksik gol farkı — negatif sayılar her yerde.</p></div>'+
+      '<div class="term-wrap"><div class="term-cubuk"><div class="term-ic" id="tmic" style="height:45%;background:#378ADD"></div></div><div style="flex:1"><label style="font-size:12px;color:var(--text2)">Sıcaklık</label><input type="range" min="-20" max="50" value="0" id="tslider" style="margin:6px 0"><div class="bilgi-kutu" id="term-acik2" style="margin-top:0">Termometreyi sürükle.</div></div></div></div>';
+    },
+    kurulum: function(){
+      var noktalar=[{x:5,a:'❄️ -15°C: Erzurum kış gecesi. Buz tehlikesi.',r:'#378ADD'},{x:22,a:'🧊 -5°C: Derin dondurucu sıcaklığı.',r:'#85B7EB'},{x:42,a:'⚖️ 0: Donma noktası. Ne pozitif ne negatif.',r:'#888780'},{x:62,a:'🌤️ +10°C: Serin bir bahar sabahı.',r:'#639922'},{x:78,a:'☀️ +20°C: Güzel bir İzmir günü.',r:'#BA7517'},{x:92,a:'🌡️ +37°C: Vücudun normal ısısı.',r:'#E24B4A'}];
+      var c=document.getElementById('sd1');
+      if(!c)return;
+      noktalar.forEach(function(n){
+        var d=document.createElement('div');d.className='sd-nokta';d.style.left=n.x+'%';d.style.background=n.r;
+        d.onclick=function(){document.getElementById('sd-acik').textContent=n.a};
+        c.appendChild(d);
+      });
+      var sl=document.getElementById('tslider');
+      if(!sl)return;
+      sl.oninput=function(){
+        var v=parseInt(sl.value);
+        var pct=((v+20)/70)*100;
+        document.getElementById('tmic').style.height=Math.max(4,pct)+'%';
+        document.getElementById('tmic').style.background=v<0?'#378ADD':v<20?'#1D9E75':v<37?'#BA7517':'#E24B4A';
+        var m=v<0?v+'°C: Negatif! Sıfırın altı. Buz oluşmaya başlar.':v===0?'0°C: Tam donma noktası.':v<20?v+'°C: Sıfırın '+v+' derece üstü. Pozitif.':v<37?v+'°C: Güzel hava!':v+'°C: Vücut ısısı seviyesi.';
+        document.getElementById('term-acik2').textContent=m;
+      };
+    },
+    sorular:[
+      {s:'Kayseri\'de hava -8°C. Bu ne anlama gelir?',sec:['Sıfırın 8 derece altında, buz tehlikesi var','8 derece sıcak, güzel bir gün','Termometre bozuk','Aynı şey'],d:0,a:'✓ Doğru! -8°C sıfırın 8 derece altı demek. Bu sıcaklıkta su donar.'},
+      {s:'Sayı doğrusunda -3 ile 5\'ten hangisi daha soldadır?',sec:['5','İkisi aynı yerde','-3','Fark etmez'],d:2,a:'✓ Doğru! Sayı doğrusu soldan sağa küçükten büyüğe gider. -3, 5\'ten küçük olduğu için soldadır.'},
+      {s:'Bir futbol takımının gol farkı -2. Bu ne demek?',sec:['2 gol yediklerinden fazla attılar','2 gol attıkları yediklerinden fazla','Hiç gol atmadılar','Maç iptal edildi'],d:0,a:'✓ Doğru! -2 gol farkı, yedikleri attıklarından 2 fazla demek. Negatif = geride.'},
+      {s:'Vücut ısısı 37°C. Bu sayı sayı doğrusunda 0\'ın neresinde?',sec:['Solunda','Üzerinde','Sağında','Sayı doğrusu dışında'],d:2,a:'✓ Doğru! 37 pozitif bir sayı olduğu için sıfırın sağında yer alır.'}
+    ]
+  },
+  {
+    id:'d2', baslik:'Sayı basamakları', renk:'#EAF3DE', renk2:'#3B6D11',
+    rozet:{id:'r2', ad:'Basamak Ustası', acik:'Sayı basamakları dersini tamamladın'},
+    icerik: function(){
+      return '<div class="kart"><div class="icerik-bolum"><h3>Rakamların ağırlığı</h3><p>3752 yazdığında aslında dört farklı ağırlığı topluyorsun: 3000 + 700 + 50 + 2. Her rakamın yeri değişince değeri de değişir.</p></div>'+
+      '<div class="bs-grid">'+
+      '<div class="bs-kart" style="background:#E6F1FB" onclick="bsAc(\'Binler basamağı\',\'3 × 1000 = 3000. En ağır basamak.\')"><div style="font-size:11px;color:#185FA5;margin-bottom:4px">BİNLER</div><div style="font-size:24px;font-weight:500;color:#0C447C">3</div></div>'+
+      '<div class="bs-kart" style="background:#EAF3DE" onclick="bsAc(\'Yüzler basamağı\',\'7 × 100 = 700. İkinci en ağır.\')"><div style="font-size:11px;color:#3B6D11;margin-bottom:4px">YÜZLER</div><div style="font-size:24px;font-weight:500;color:#27500A">7</div></div>'+
+      '<div class="bs-kart" style="background:#FAEEDA" onclick="bsAc(\'Onlar basamağı\',\'5 × 10 = 50. Üçüncü basamak.\')"><div style="font-size:11px;color:#854F0B;margin-bottom:4px">ONLAR</div><div style="font-size:24px;font-weight:500;color:#633806">5</div></div>'+
+      '<div class="bs-kart" style="background:#FAECE7" onclick="bsAc(\'Birler basamağı\',\'2 × 1 = 2. En hafif basamak.\')"><div style="font-size:11px;color:#993C1D;margin-bottom:4px">BİRLER</div><div style="font-size:24px;font-weight:500;color:#712B13">2</div></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu" id="bs-acik">Bir basamağa tıkla, değerini gör. 3752 = 3000 + 700 + 50 + 2</div>'+
+      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat örneği</h3><p>Bir TV 3752 TL. Binler: 3000 TL ana fiyat. Yüzler: 700 TL ekstra. Onlar: 50 TL. Birler: 2 TL. Her basamak para birimi gibi düşünülebilir.</p></div></div>';
+    },
+    kurulum: function(){},
+    sorular:[
+      {s:'4821 sayısında 8 rakamının değeri nedir?',sec:['8','80','800','8000'],d:2,a:'✓ Doğru! 4-8-2-1 dizisinde 8, yüzler basamağındadır. 8 × 100 = 800.'},
+      {s:'1350 sayısında binler basamağındaki rakam kaç TL değer taşır?',sec:['1 TL','10 TL','100 TL','1000 TL'],d:3,a:'✓ Doğru! 1350\'de 1 rakamı binler basamağında, değeri 1 × 1000 = 1000 TL.'},
+      {s:'Hangi sayıda onlar basamağında 6 vardır?',sec:['1462','2061','3601','4069'],d:3,a:'✓ Doğru! 4069: 4 binler, 0 yüzler, 6 onlar, 9 birler.'},
+      {s:'5000 + 400 + 30 + 7 = ?',sec:['5437','5473','4537','5743'],d:0,a:'✓ Doğru! 5000+400+30+7 = 5437. Her basamağı toplayarak sayıyı bulduk.'}
+    ]
+  },
+  {
+    id:'d3', baslik:'Tam sayılar ve sıfır', renk:'#EEEDFE', renk2:'#3C3489',
+    rozet:{id:'r3', ad:'Tam Sayı Uzmanı', acik:'Tam sayılar ve sıfır dersini tamamladın'},
+    icerik: function(){
+      return '<div class="kart"><div class="icerik-bolum"><h3>Tam sayılar nedir?</h3><p>Tam sayılar kesirli olmayan sayılardır: ...-3, -2, -1, 0, 1, 2, 3... Üç gruba ayrılır: pozitif, negatif ve sıfır.</p></div>'+
+      '<div class="gol-grid">'+
+      '<div class="gol-kart" style="background:var(--red-bg)"><div style="font-size:12px;color:var(--red);margin-bottom:6px;font-weight:500">Negatif</div><div style="font-size:13px;color:var(--red-text);line-height:1.8">...-3<br>-2<br>-1</div></div>'+
+      '<div class="gol-kart" style="background:var(--bg2);border:2px solid var(--border2)"><div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500">Sıfır</div><div style="font-size:26px;font-weight:500;margin-top:6px">0</div></div>'+
+      '<div class="gol-kart" style="background:var(--green-bg)"><div style="font-size:12px;color:var(--green);margin-bottom:6px;font-weight:500">Pozitif</div><div style="font-size:13px;color:var(--green-text);line-height:1.8">1<br>2<br>3...</div></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu">Sıfır ne pozitiftir ne negatif. Tam ortadadır. Banka hesabında 0 TL: ne borçlusun ne alacaklısın.</div>'+
+      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat: sıfır önemlidir</h3><p>Asansörde 0 zemin katıdır. Banka borcun 0\'a inmesi hedef. Sporda 0-0 beraberlik. Sıcaklıkta 0°C donma noktası. Sıfır, yokluk değil — tam ortada denge noktasıdır.</p></div></div>';
+    },
+    kurulum: function(){},
+    sorular:[
+      {s:'-7 hangi gruba girer?',sec:['Pozitif tam sayı','Sıfır','Negatif tam sayı','Kesirli sayı'],d:2,a:'✓ Doğru! -7 negatif tam sayıdır. Sıfırın solunda, 7 birim uzakta.'},
+      {s:'Asansörün "0" katı ne anlama gelir?',sec:['Asansör çalışmıyor','Zemin kat, giriş seviyesi','En üst kat','Bodrumun altı'],d:1,a:'✓ Doğru! 0 zemin katıdır. Pozitif katlar yukarı, negatif katlar aşağı gider.'},
+      {s:'Hangisi tam sayı değildir?',sec:['-5','0','3','2.5'],d:3,a:'✓ Doğru! 2.5 tam sayı değildir, kesirlidir. Tam sayılar: ...-2,-1,0,1,2...'},
+      {s:'Banka hesabında -250 TL var. Bu ne anlama gelir?',sec:['250 TL birikimi var','Ne birikimi ne borcu var','250 TL borcu var','Hesap kapalı'],d:2,a:'✓ Doğru! Negatif sayı bu durumda borcu temsil eder. -250 TL = 250 TL eksik, borçluyuz.'}
+    ]
+  }
+];
+
+var DURUM = {tamamlanan:[], dogruSayac:0, kazanilanRozetler:[]};
+var aktifDers = null, quizSoru = 0, quizDogru = 0;
+
+function veriYukle(){
+  try{ var k=localStorage.getItem('mp_durum'); if(k) DURUM=JSON.parse(k); }catch(e){}
+}
+function veriKaydet(){
+  try{ localStorage.setItem('mp_durum', JSON.stringify(DURUM)); }catch(e){}
+}
+function sifirla(){
+  if(!confirm('Tüm ilerleme silinecek. Emin misin?')) return;
+  DURUM={tamamlanan:[],dogruSayac:0,kazanilanRozetler:[]};
+  veriKaydet(); ekranGoster('ekran-anasayfa');
+}
+function bsAc(baslik, acik){ document.getElementById('bs-acik').textContent = baslik+': '+acik; }
+window.bsAc = bsAc;
+
+function ekranGoster(id){
+  document.querySelectorAll('.ekran').forEach(function(e){ e.classList.remove('aktif'); });
+  document.getElementById(id).classList.add('aktif');
+  if(id==='ekran-anasayfa') anaSayfaGuncelle();
+  if(id==='ekran-istatistik') istatGuncelle();
+}
+
+function anaSayfaGuncelle(){
+  var tam=DURUM.tamamlanan.length, toplam=DERSLER.length;
+  var pct=Math.round((tam/toplam)*100);
+  document.getElementById('genel-pct').textContent=pct+'%';
+  document.getElementById('genel-bar').style.width=pct+'%';
+  var liste=document.getElementById('ders-listesi');
+  liste.innerHTML='';
+  DERSLER.forEach(function(d,i){
+    var tamam=DURUM.tamamlanan.indexOf(d.id)>=0;
+    var kilitli=i>0 && DURUM.tamamlanan.indexOf(DERSLER[i-1].id)<0;
+    var div=document.createElement('div');
+    div.className='ders-kart'+(tamam?' tamamlandi':'')+(kilitli?' kilitli':'');
+    div.innerHTML='<div class="ders-no" style="background:'+d.renk+';color:'+d.renk2+'">'+(tamam?'✓':(i+1))+'</div>'+
+      '<div style="flex:1"><div style="font-size:14px;font-weight:500;margin-bottom:2px">'+d.baslik+'</div>'+
+      '<div style="font-size:12px;color:var(--text2)">'+d.sorular.length+' soru · '+(tamam?'Tamamlandı':'Bekliyor')+'</div></div>'+
+      (kilitli?'<span style="font-size:12px;color:var(--text3)">Kilitli</span>':
+       tamam?'<span class="badge badge-green">Tekrar</span>':'<span class="badge badge-blue">Başla</span>');
+    if(!kilitli) div.onclick=function(){ dersiAc(d); };
+    liste.appendChild(div);
+  });
+}
+
+function dersiAc(ders){
+  aktifDers=ders;
+  document.getElementById('ders-baslik-nav').textContent=ders.baslik;
+  document.getElementById('ders-icerik').innerHTML=ders.icerik();
+  ekranGoster('ekran-ders');
+  setTimeout(function(){ if(ders.kurulum) ders.kurulum(); }, 100);
+}
+
+function dersQuizBaslat(){
+  if(!aktifDers) return;
+  quizSoru=0; quizDogru=0;
+  document.getElementById('quiz-baslik-nav').textContent=aktifDers.baslik;
+  ekranGoster('ekran-quiz');
+  soruGoster();
+}
+
+function soruGoster(){
+  var sorular=aktifDers.sorular;
+  var alan=document.getElementById('quiz-icerik');
+  if(quizSoru>=sorular.length){ quizBitti(); return; }
+  var q=sorular[quizSoru];
+  var noktalar=sorular.map(function(_,i){
+    return '<div class="quiz-nokta'+(i<quizSoru?' bitti':i===quizSoru?' aktif':'')+'"></div>';
+  }).join('');
+  alan.innerHTML='<div class="quiz-ilerleme">'+noktalar+'</div>'+
+    '<div class="kart">'+
+    '<div style="font-size:14px;font-weight:500;margin-bottom:1rem">'+q.s+'</div>'+
+    '<div id="secenekler">'+q.sec.map(function(s,i){
+      return '<button class="secenek-btn" onclick="cevapla(this,'+i+')">'+s+'</button>';
+    }).join('')+'</div>'+
+    '<div id="geri" style="display:none"></div></div>'+
+    '<div style="font-size:12px;color:var(--text2);text-align:right;margin-top:6px">Soru '+(quizSoru+1)+' / '+sorular.length+'</div>';
+}
+
+function cevapla(el, secilen){
+  var q=aktifDers.sorular[quizSoru];
+  document.querySelectorAll('.secenek-btn').forEach(function(b){ b.disabled=true; });
+  var geri=document.getElementById('geri');
+  geri.style.display='block';
+  geri.className='geri-bildirim';
+  if(secilen===q.d){
+    el.classList.add('dogru');
+    geri.classList.add('dogru');
+    geri.textContent=q.a;
+    quizDogru++; DURUM.dogruSayac++;
+  } else {
+    el.classList.add('yanlis');
+    document.querySelectorAll('.secenek-btn')[q.d].classList.add('dogru');
+    geri.classList.add('yanlis');
+    geri.textContent='Yanlış. '+q.a;
+  }
+  veriKaydet();
+  setTimeout(function(){ quizSoru++; soruGoster(); }, 2200);
+}
+
+function quizBitti(){
+  var toplam=aktifDers.sorular.length;
+  var pct=Math.round((quizDogru/toplam)*100);
+  if(DURUM.tamamlanan.indexOf(aktifDers.id)<0) DURUM.tamamlanan.push(aktifDers.id);
+  if(DURUM.kazanilanRozetler.indexOf(aktifDers.rozet.id)<0) DURUM.kazanilanRozetler.push(aktifDers.rozet.id);
+  veriKaydet();
+  var daire=document.getElementById('sonuc-daire');
+  daire.style.background=pct>=70?'var(--green-bg)':'var(--red-bg)';
+  document.getElementById('sonuc-sayi').style.color=pct>=70?'var(--green-text)':'var(--red-text)';
+  document.getElementById('sonuc-sayi').textContent=quizDogru+'/'+toplam;
+  document.getElementById('sonuc-alt').textContent=pct+'%';
+  document.getElementById('sonuc-alt').style.color=pct>=70?'var(--green)':'var(--red)';
+  document.getElementById('sonuc-baslik').textContent=pct>=80?'Mükemmel!':pct>=60?'İyi iş!':'Tekrar dene';
+  document.getElementById('sonuc-metin').textContent=pct>=70?aktifDers.baslik+' dersini başarıyla tamamladın.':'Bazı konuları tekrar gözden geçirebilirsin.';
+  document.getElementById('sonuc-rozet-alan').innerHTML='<span class="rozet-kazanildi">'+aktifDers.rozet.ad+' rozeti kazanıldı</span>';
+  var idx=DERSLER.findIndex(function(d){ return d.id===aktifDers.id; });
+  var btn=document.getElementById('sonuc-sonraki-btn');
+  if(idx<DERSLER.length-1){ btn.style.display=''; btn.onclick=function(){ dersiAc(DERSLER[idx+1]); }; }
+  else { btn.style.display='none'; }
+  ekranGoster('ekran-sonuc');
+}
+
+function istatGuncelle(){
+  document.getElementById('is-tamamlanan').textContent=DURUM.tamamlanan.length;
+  document.getElementById('is-dogru').textContent=DURUM.dogruSayac;
+  document.getElementById('is-rozet').textContent=DURUM.kazanilanRozetler.length;
+  var alan=document.getElementById('rozet-listesi');
+  alan.innerHTML=DERSLER.map(function(d){
+    var k=DURUM.kazanilanRozetler.indexOf(d.rozet.id)>=0;
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)">'+
+      '<div><div style="font-size:13px;font-weight:500">'+d.rozet.ad+'</div>'+
+      '<div style="font-size:12px;color:var(--text2)">'+d.rozet.acik+'</div></div>'+
+      (k?'<span class="rozet-kazanildi">Kazanıldı</span>':'<span class="rozet-kilitli">Kilitli</span>')+'</div>';
+  }).join('');
+}
+
+veriYukle();
+anaSayfaGuncelle();
+</script>
+</body>
+</html>
