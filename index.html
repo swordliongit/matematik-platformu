@@ -171,11 +171,11 @@ var DERSLER = [
       return '<div class="kart"><div class="icerik-bolum"><h3>Sayılar nerede yaşıyor?</h3><p>Her sayı bir çizgi üzerinde bir noktadır. Bu çizgiye <strong>sayı doğrusu</strong> diyoruz. Solda küçük, sağda büyük sayılar bulunur.</p></div>'+
       '<div class="sayi-dogrusu"><div class="sd-cubuk" id="sd1"></div><div class="sd-label"><span>-15</span><span>-5</span><span>0</span><span>10</span><span>20</span><span>37</span></div></div>'+
       '<div class="bilgi-kutu" id="sd-acik">Noktalara tıkla, gerçek hayattan örnekleri gör.</div>'+
-      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Negatif sayılar</h3><p>Sıfırın solundaki sayılar negatiftir. -5 derece: suyun donmasına 5 derece kalmış demektir. Banka borcu, deniz seviyesinin altı, eksik gol farkı — negatif sayılar her yerde.</p></div>'+
+      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Negatif sayılar</h3><p>Sıfırın solundaki sayılar negatiftir. -5 derece: suyun donmasına 5 derece kalmış demektir. Banka borcu, deniz seviyesinin altı, eksik gol farkı -- negatif sayılar her yerde.</p></div>'+
       '<div class="term-wrap"><div class="term-cubuk"><div class="term-ic" id="tmic" style="height:45%;background:#378ADD"></div></div><div style="flex:1"><label style="font-size:12px;color:var(--text2)">Sıcaklık</label><input type="range" min="-20" max="50" value="0" id="tslider" style="margin:6px 0"><div class="bilgi-kutu" id="term-acik2" style="margin-top:0">Termometreyi sürükle.</div></div></div></div>';
     },
     kurulum: function(){
-      var noktalar=[{x:5,a:'❄️ -15°C: Erzurum kış gecesi. Buz tehlikesi.',r:'#378ADD'},{x:22,a:'🧊 -5°C: Derin dondurucu sıcaklığı.',r:'#85B7EB'},{x:42,a:'⚖️ 0: Donma noktası. Ne pozitif ne negatif.',r:'#888780'},{x:62,a:'🌤️ +10°C: Serin bir bahar sabahı.',r:'#639922'},{x:78,a:'☀️ +20°C: Güzel bir İzmir günü.',r:'#BA7517'},{x:92,a:'🌡️ +37°C: Vücudun normal ısısı.',r:'#E24B4A'}];
+      var noktalar=[{x:5,a:'❄️ -15°C: Erzurum kış gecesi. Buz tehlikesi.',r:'#378ADD'},{x:22,a:'🧊 -5°C: Derin dondurucu sıcaklığı.',r:'#85B7EB'},{x:42,a:'⚖️ 0°C: Donma noktası. Ne pozitif ne negatif.',r:'#888780'},{x:62,a:'🌱 +10°C: Serin bir bahar sabahı.',r:'#639922'},{x:78,a:'☀️ +20°C: Güzel bir İzmir günü.',r:'#BA7517'},{x:92,a:'🌡️ +37°C: Vücudun normal ısısı.',r:'#E24B4A'}];
       var c=document.getElementById('sd1');
       if(!c)return;
       noktalar.forEach(function(n){
@@ -190,15 +190,15 @@ var DERSLER = [
         var pct=((v+20)/70)*100;
         document.getElementById('tmic').style.height=Math.max(4,pct)+'%';
         document.getElementById('tmic').style.background=v<0?'#378ADD':v<20?'#1D9E75':v<37?'#BA7517':'#E24B4A';
-        var m=v<0?v+'°C: Negatif! Sıfırın altı. Buz oluşmaya başlar.':v===0?'0°C: Tam donma noktası.':v<20?v+'°C: Sıfırın '+v+' derece üstü. Pozitif.':v<37?v+'°C: Güzel hava!':v+'°C: Vücut ısısı seviyesi.';
+        var m=v<0?v+' °C: Negatif! Sıfırın altı. Buz oluşmaya başlar.':v===0?'0 °C: Tam donma noktası.':v<20?v+' °C: Sıfırın '+v+' derece üstü. Pozitif.':v<37?v+' °C: Güzel hava!':v+' °C: Vücut ısısı seviyesi.';
         document.getElementById('term-acik2').textContent=m;
       };
     },
     sorular:[
-      {s:'Kayseri\'de hava -8°C. Bu ne anlama gelir?',sec:['Sıfırın 8 derece altında, buz tehlikesi var','8 derece sıcak, güzel bir gün','Termometre bozuk','Aynı şey'],d:0,a:'✓ Doğru! -8°C sıfırın 8 derece altı demek. Bu sıcaklıkta su donar.'},
+      {s:'Kayseri\'de hava -8 °C. Bu ne anlama gelir?',sec:['Sıfırın 8 derece altında, buz tehlikesi var','8 derece sıcak, güzel bir gün','Termometre bozuk','Aynı şey'],d:0,a:'✓ Doğru! -8 °C sıfırın 8 derece altı demek. Bu sıcaklıkta su donar.'},
       {s:'Sayı doğrusunda -3 ile 5\'ten hangisi daha soldadır?',sec:['5','İkisi aynı yerde','-3','Fark etmez'],d:2,a:'✓ Doğru! Sayı doğrusu soldan sağa küçükten büyüğe gider. -3, 5\'ten küçük olduğu için soldadır.'},
       {s:'Bir futbol takımının gol farkı -2. Bu ne demek?',sec:['2 gol yediklerinden fazla attılar','2 gol attıkları yediklerinden fazla','Hiç gol atmadılar','Maç iptal edildi'],d:0,a:'✓ Doğru! -2 gol farkı, yedikleri attıklarından 2 fazla demek. Negatif = geride.'},
-      {s:'Vücut ısısı 37°C. Bu sayı sayı doğrusunda 0\'ın neresinde?',sec:['Solunda','Üzerinde','Sağında','Sayı doğrusu dışında'],d:2,a:'✓ Doğru! 37 pozitif bir sayı olduğu için sıfırın sağında yer alır.'}
+      {s:'Vücut ısısı 37 °C. Bu sayı sayı doğrusunda 0\'ın neresinde?',sec:['Solunda','Üzerinde','Sağında','Sayı doğrusu dışında'],d:2,a:'✓ Doğru! 37 pozitif bir sayı olduğu için sıfırın sağında yer alır.'}
     ]
   },
   {
@@ -234,7 +234,7 @@ var DERSLER = [
       '<div class="gol-kart" style="background:var(--green-bg)"><div style="font-size:12px;color:var(--green);margin-bottom:6px;font-weight:500">Pozitif</div><div style="font-size:13px;color:var(--green-text);line-height:1.8">1<br>2<br>3...</div></div>'+
       '</div>'+
       '<div class="bilgi-kutu">Sıfır ne pozitiftir ne negatif. Tam ortadadır. Banka hesabında 0 TL: ne borçlusun ne alacaklısın.</div>'+
-      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat: sıfır önemlidir</h3><p>Asansörde 0 zemin katıdır. Banka borcun 0\'a inmesi hedef. Sporda 0-0 beraberlik. Sıcaklıkta 0°C donma noktası. Sıfır, yokluk değil — tam ortada denge noktasıdır.</p></div></div>';
+      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat: sıfır önemlidir</h3><p>Asansörde 0 zemin katıdır. Banka borcun 0\'a inmesi hedef. Sporda 0-0 beraberlik. Sıcaklıkta 0 °C donma noktası. Sıfır, yokluk değil -- tam ortada denge noktasıdır.</p></div></div>';
     },
     kurulum: function(){},
     sorular:[
@@ -242,6 +242,85 @@ var DERSLER = [
       {s:'Asansörün "0" katı ne anlama gelir?',sec:['Asansör çalışmıyor','Zemin kat, giriş seviyesi','En üst kat','Bodrumun altı'],d:1,a:'✓ Doğru! 0 zemin katıdır. Pozitif katlar yukarı, negatif katlar aşağı gider.'},
       {s:'Hangisi tam sayı değildir?',sec:['-5','0','3','2.5'],d:3,a:'✓ Doğru! 2.5 tam sayı değildir, kesirlidir. Tam sayılar: ...-2,-1,0,1,2...'},
       {s:'Banka hesabında -250 TL var. Bu ne anlama gelir?',sec:['250 TL birikimi var','Ne birikimi ne borcu var','250 TL borcu var','Hesap kapalı'],d:2,a:'✓ Doğru! Negatif sayı bu durumda borcu temsil eder. -250 TL = 250 TL eksik, borçluyuz.'}
+    ]
+  },
+  {
+    id:'d4', baslik:'Kesirler', renk:'#FAECE7', renk2:'#993C1D',
+    rozet:{id:'r4', ad:'Kesir Ustası', acik:'Kesirler dersini tamamladın'},
+    icerik: function(){
+      return '<div class="kart"><div class="icerik-bolum"><h3>Kesir nedir?</h3><p>Bir bütünü eşit parçalara böldüğümüzde her parçaya <strong>kesir</strong> diyoruz. Pizzayı 4 eşit parçaya böldün, 1 parça aldın: bu 1/4 yani "dörtte bir"dir.</p></div>'+
+      '<div style="display:flex;gap:16px;align-items:flex-start;margin:1rem 0;flex-wrap:wrap">'+
+      '<div style="flex:1;min-width:180px">'+
+      '<div style="text-align:center;margin-bottom:8px;font-size:13px;color:var(--text2)">Pizza modeli</div>'+
+      '<div id="pizza-wrap" style="position:relative;width:140px;height:140px;margin:0 auto;cursor:pointer" onclick="pizzaDilimle()">'+
+      '<svg viewBox="0 0 140 140" width="140" height="140" id="pizza-svg"></svg>'+
+      '</div>'+
+      '<div style="text-align:center;margin-top:8px;font-size:13px" id="pizza-label">Tıkla, dilimle!</div>'+
+      '</div>'+
+      '<div style="flex:1;min-width:160px">'+
+      '<div class="bilgi-kutu" id="kesir-acik" style="margin:0">Pizza bölünmemiş = 1 bütün. Tıklayarak dilimle ve kesri gör.</div>'+
+      '</div></div>'+
+      '<div class="icerik-bolum"><h3>Pay ve payda</h3><p>Kesirde iki sayı vardır. <strong>Payda</strong> (alttaki): bütün kaç parçaya bölündü. <strong>Pay</strong> (üstteki): kaç parça alındı. 3/8 → bütün 8 parça, sen 3\'ünü aldın.</p></div>'+
+      '<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin:1rem 0;flex-wrap:wrap">'+
+      '<div style="text-align:center;background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem 2rem">'+
+      '<div style="font-size:32px;font-weight:500;color:#993C1D;border-bottom:3px solid #993C1D;padding-bottom:4px;min-width:40px">3</div>'+
+      '<div style="font-size:32px;font-weight:500;color:#185FA5;padding-top:4px">8</div>'+
+      '<div style="font-size:11px;color:var(--text2);margin-top:8px">Üç bölü sekiz</div>'+
+      '</div>'+
+      '<div style="font-size:13px;color:var(--text2);line-height:2">'+
+      '<div style="color:#993C1D;font-weight:500">3 → Pay: alınan parça</div>'+
+      '<div style="color:#185FA5;font-weight:500">8 → Payda: toplam parça</div>'+
+      '</div></div>'+
+      '<div class="icerik-bolum"><h3>Gerçek hayat örnekleri</h3><p>Günlük hayatta kesirler her yerde: 1/2 ekmek, 3/4 saat (45 dakika), 2/3 bardak su, yarım kg et. "Yarım" aslında 1/2 kesirimizdir.</p></div></div>';
+    },
+    kurulum: function(){
+      var dilim=1, toplam=1;
+      function ciz(){
+        var svg=document.getElementById('pizza-svg');
+        if(!svg)return;
+        svg.innerHTML='';
+        var cx=70,cy=70,r=60;
+        var renkler=['#E24B4A','#F09595','#FAEEDA','#EAF3DE','#B5D4F4','#CECBF6','#F5C4B3','#C0DD97'];
+        if(toplam===1){
+          var daire=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          daire.setAttribute('cx',cx);daire.setAttribute('cy',cy);daire.setAttribute('r',r);
+          daire.setAttribute('fill','#E24B4A');daire.setAttribute('stroke','#fff');daire.setAttribute('stroke-width','2');
+          svg.appendChild(daire);
+        } else {
+          for(var i=0;i<toplam;i++){
+            var bas=(i/toplam)*2*Math.PI - Math.PI/2;
+            var bit=((i+1)/toplam)*2*Math.PI - Math.PI/2;
+            var x1=cx+r*Math.cos(bas),y1=cy+r*Math.sin(bas);
+            var x2=cx+r*Math.cos(bit),y2=cy+r*Math.sin(bit);
+            var buyuk=bit-bas>Math.PI?1:0;
+            var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+            path.setAttribute('d','M'+cx+' '+cy+' L'+x1+' '+y1+' A'+r+' '+r+' 0 '+buyuk+' 1 '+x2+' '+y2+' Z');
+            path.setAttribute('fill',i<dilim?renkler[i%renkler.length]:'var(--bg2)');
+            path.setAttribute('stroke','#fff');path.setAttribute('stroke-width','2');
+            svg.appendChild(path);
+          }
+        }
+        document.getElementById('pizza-label').textContent=toplam===1?'1 bütün':dilim+' / '+toplam;
+        var aciklar={1:'1 bütün pizza. Henüz kesilmedi.',2:'Yarıya böldük. Her parça 1/2. Sen '+dilim+'/2 aldın.',3:'Üçe böldük. Her parça 1/3. Sen '+dilim+'/3 aldın.',4:'Dörde böldük. Her parça 1/4. Sen '+dilim+'/4 aldın.',6:'Altıya böldük. Her parça 1/6. Sen '+dilim+'/6 aldın.',8:'Sekize böldük. Her parça 1/8. Sen '+dilim+'/8 aldın.'};
+        var el=document.getElementById('kesir-acik');
+        if(el)el.textContent=aciklar[toplam]||dilim+'/'+toplam+' dilim aldın.';
+      }
+      window.pizzaDilimle=function(){
+        var sira=[1,2,3,4,6,8];
+        var idx=sira.indexOf(toplam);
+        toplam=sira[(idx+1)%sira.length];
+        dilim=Math.min(dilim,toplam);
+        if(toplam>1&&dilim===toplam)dilim=1;
+        ciz();
+      };
+      ciz();
+    },
+    sorular:[
+      {s:'Bir pastayı 8 eşit parçaya böldük, 3 parça yedik. Bu hangi kesirdir?',sec:['8/3','3/8','1/3','5/8'],d:1,a:'✓ Doğru! 3/8: pay=yenen parça (3), payda=toplam parça (8).'},
+      {s:'1/2 kesrinde payda kaçtır?',sec:['1','2','3','Payda yok'],d:1,a:'✓ Doğru! Payda alttaki sayıdır: 2. Yani bütün 2 eşit parçaya bölünmüş.'},
+      {s:'"Çeyrek saat" kaç dakikadır? (1 saat = 60 dakika, çeyrek = 1/4)',sec:['10 dakika','15 dakika','20 dakika','30 dakika'],d:1,a:'✓ Doğru! 1/4 × 60 = 15 dakika. Çeyrek = dörtte bir demek.'},
+      {s:'3/3 kesri neye eşittir?',sec:['1/3','0','1 bütün','3'],d:2,a:'✓ Doğru! Pay ve payda eşit olunca kesir 1 bütüne eşit olur. Pizzanın 3 parçasını 3 parçaya böldüysen hepsini almışsındır.'},
+      {s:'Hangi kesir en büyüktür?',sec:['1/2','1/4','1/8','1/3'],d:0,a:'✓ Doğru! Payda büyüdükçe parçalar küçülür. 1/2 en büyük parça, 1/8 en küçüğü.'}
     ]
   }
 ];
@@ -282,9 +361,9 @@ function anaSayfaGuncelle(){
     var kilitli=i>0 && DURUM.tamamlanan.indexOf(DERSLER[i-1].id)<0;
     var div=document.createElement('div');
     div.className='ders-kart'+(tamam?' tamamlandi':'')+(kilitli?' kilitli':'');
-    div.innerHTML='<div class="ders-no" style="background:'+d.renk+';color:'+d.renk2+'">'+(tamam?'✓':(i+1))+'</div>'+
+    div.innerHTML='<div class="ders-no" style="background:'+d.renk+';color:'+d.renk2+'">'+(tamam?'Dogru':(i+1))+'</div>'+
       '<div style="flex:1"><div style="font-size:14px;font-weight:500;margin-bottom:2px">'+d.baslik+'</div>'+
-      '<div style="font-size:12px;color:var(--text2)">'+d.sorular.length+' soru · '+(tamam?'Tamamlandı':'Bekliyor')+'</div></div>'+
+      '<div style="font-size:12px;color:var(--text2)">'+d.sorular.length+' soru - '+(tamam?'Tamamlandı':'Bekliyor')+'</div></div>'+
       (kilitli?'<span style="font-size:12px;color:var(--text3)">Kilitli</span>':
        tamam?'<span class="badge badge-green">Tekrar</span>':'<span class="badge badge-blue">Başla</span>');
     if(!kilitli) div.onclick=function(){ dersiAc(d); };
