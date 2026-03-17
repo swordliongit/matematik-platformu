@@ -836,15 +836,15 @@ var DERSLER=[
       {pay:9,payda:12,adimlar:[{boler:3,yeniPay:3,yeniPayda:4,acik:'9 ve 12&#39;nin ikisi de 3&#39;e bölünür'}]},
       {pay:10,payda:15,adimlar:[{boler:5,yeniPay:2,yeniPayda:3,acik:'10 ve 15&#39;in ikisi de 5&#39;e bölünür'}]},
     ];
-    var sadeIdx=0;
-    function sadeGoster(){
+    window.sadeIdx=0;
+    window.sadeGoster=function(){
       var demo=document.getElementById('sadeles-demo');
       if(!demo)return;
-      var k=sadelesKesirler[sadeIdx];
+      var k=sadelesKesirler[window.sadeIdx];
       var a=k.adimlar[0];
       demo.innerHTML=
         '<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin:0">'+
-          '<div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-weight:500">ADIM ADIM DENE — Örnek '+(sadeIdx+1)+'/'+sadelesKesirler.length+'</div>'+
+          '<div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-weight:500">ADIM ADIM DENE — Örnek '+(window.sadeIdx+1)+'/'+sadelesKesirler.length+'</div>'+
           '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">'+
             '<div style="text-align:center;min-width:70px">'+
               '<div style="font-size:11px;color:var(--text2);margin-bottom:6px">Başlangıç</div>'+
@@ -872,13 +872,13 @@ var DERSLER=[
           '</div>'+
           '<div id="sade-acik" class="bilgi-kutu" style="margin-top:12px;min-height:40px">Yeşil bordürlü bölenlerden birini seç!</div>'+
           '<div style="display:flex;gap:8px;margin-top:10px">'+
-            '<button onclick="sadeGoster()" class="btn" style="flex:1">Yenile</button>'+
-            '<button onclick="sadeIdx=(sadeIdx+1)%'+sadelesKesirler.length+';sadeGoster()" class="btn btn-primary" style="flex:1">Sonraki Örnek →</button>'+
+            '<button onclick="window.sadeGoster()" class="btn" style="flex:1">Yenile</button>'+
+            '<button onclick="sadeIdx=(window.sadeIdx=(window.sadeIdx+1)%'+sadelesKesirler.length+';window.sadeGoster()" class="btn btn-primary" style="flex:1">Sonraki Örnek →</button>'+
           '</div>'+
         '</div>';
     }
     window.sadeBolenSec=function(n){
-      var k=sadelesKesirler[sadeIdx];
+      var k=sadelesKesirler[window.sadeIdx];
       var a=k.adimlar[0];
       if(k.pay%n!==0||k.payda%n!==0){
         document.getElementById('sade-acik').textContent='❌ '+n+', hem '+k.pay+'i hem de '+k.payda+'yi tam bolemiyor. Baska bir sayi dene.';
@@ -898,7 +898,7 @@ var DERSLER=[
         (sadeHal?' → ✓ En sade hâl! '+k.pay+'/'+k.payda+' = '+yeniPay+'/'+yeniPayda :
         ' → Doğru ama daha da sadeleştirilebilir. '+(yeniPay)+'/'+yeniPayda+' → ortak bölen var mı?');
     };
-    sadeGoster();
+    window.sadeGoster();
     var kesirler=[{k:'1/2',v:50},{k:'1/3',v:33},{k:'2/3',v:67},{k:'1/4',v:25},{k:'3/4',v:75}];
     var html='<div style="display:flex;flex-direction:column;gap:8px">';
     kesirler.forEach(function(x){
