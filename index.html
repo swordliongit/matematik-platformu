@@ -873,10 +873,14 @@ var DERSLER=[
           '<div id="sade-acik" class="bilgi-kutu" style="margin-top:12px;min-height:40px">Yeşil bordürlü bölenlerden birini seç!</div>'+
           '<div style="display:flex;gap:8px;margin-top:10px">'+
             '<button onclick="window.sadeGoster()" class="btn" style="flex:1">Yenile</button>'+
-            '<button onclick="sadeIdx=(window.sadeIdx=(window.sadeIdx+1)%'+sadelesKesirler.length+';window.sadeGoster()" class="btn btn-primary" style="flex:1">Sonraki Örnek →</button>'+
+            '<button onclick="window.sadeSonraki()" class="btn btn-primary" style="flex:1">Sonraki Örnek →</button>'+
           '</div>'+
         '</div>';
     }
+    window.sadeSonraki=function(){
+      window.sadeIdx=(window.sadeIdx+1)%sadelesKesirler.length;
+      window.sadeGoster();
+    };
     window.sadeBolenSec=function(n){
       var k=sadelesKesirler[window.sadeIdx];
       var a=k.adimlar[0];
