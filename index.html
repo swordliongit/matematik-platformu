@@ -558,7 +558,7 @@ var DERSLER = [
         interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;justify-content:center"><div style="text-align:center;background:var(--bg2);padding:1rem;border-radius:var(--radius)"><div style="font-size:11px;color:var(--text2)">Eski fiyat</div><div style="font-size:22px;font-weight:500;text-decoration:line-through;color:var(--text2)">80 TL</div></div><div style="font-size:20px;color:#E24B4A;font-weight:500">%50</div><div style="text-align:center;background:var(--green-bg);padding:1rem;border-radius:var(--radius)"><div style="font-size:11px;color:var(--green-text)">Yeni fiyat</div><div style="font-size:22px;font-weight:500;color:var(--green-text)">40 TL</div></div></div>';}},
       {s:'Sınavda 40 sorudan 32&#39;sini doğru yaptın. Başarı yüzden kaçtır?',sec:['%32','%80','%40','%75'],d:1,a:'✓ Doğru! 32 ÷ 40 × 100 = %80.',
         interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<40;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<32?'#0F6E56':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;margin-top:6px"><span style="color:#0F6E56">32 doğru</span> / 40 soru = <span style="font-weight:500">%80</span></div>';}},
-      {s:'%10 nedir?',sec:['Onda biri','Yüzde onu','Onu','Yarısı'],d:0,a:'✓ Doğru! %10 = 10/100 = 1/10. Yani onda bir.',
+      {s:'%10 kaça eşittir?',sec:['1/10 (onda bir)','1/100 (yüzde bir)','1/2 (yarım)','10'],d:0,a:'✓ Doğru! %10 = 10/100 = 1/10. Her 10 birimden 1 tane demektir.',
         interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<10;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i===0?'#854F0B':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;color:#854F0B">10&#39;dan 1 tane = onda bir = %10</div>';}},
       {s:'500 TL&#39;nin %20&#39;si kaç TL&#39;dir?',sec:['20 TL','100 TL','200 TL','50 TL'],d:1,a:'✓ Doğru! 500 × 20 ÷ 100 = 100 TL.',
         interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#185FA5">500 TL</span><span>×</span><span style="color:#854F0B">%20</span><span>=</span><span style="color:#0F6E56">100 TL</span></div>';}},
@@ -801,7 +801,12 @@ function cevapla(el, secilen){
     var intDiv = document.getElementById('quiz-interaktif');
     if(intDiv){ intDiv.style.display='block'; q.interaktif(intDiv); }
   }
-  setTimeout(function(){ quizSoru++; soruGoster(); }, 2800);
+  var devamBtn = document.createElement('button');
+  devamBtn.className = 'btn btn-primary btn-block';
+  devamBtn.style.marginTop = '12px';
+  devamBtn.textContent = quizSoru+1 >= aktifDers.sorular.length ? 'Sonucu Gör →' : 'Sonraki Soru →';
+  devamBtn.onclick = function(){ quizSoru++; soruGoster(); };
+  document.querySelector('.kart').appendChild(devamBtn);
 }
 
 function quizBitti(){
