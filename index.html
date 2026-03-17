@@ -771,16 +771,13 @@ function soruGoster(){
   alan.innerHTML = '<div class="quiz-ilerleme">'+noktalar+'</div>'+
     '<div class="kart">'+
     '<div style="font-size:14px;font-weight:500;margin-bottom:1rem">'+q.s+'</div>'+
-    (q.interaktif ? '<div id="quiz-interaktif" style="margin-bottom:12px"></div>' : '')+
     '<div id="secenekler">'+q.sec.map(function(s,i){
       return '<button class="secenek-btn" onclick="cevapla(this,'+i+')">'+s+'</button>';
     }).join('')+'</div>'+
-    '<div id="geri" style="display:none"></div></div>'+
+    '<div id="geri" style="display:none"></div>'+
+    '<div id="quiz-interaktif" style="display:none;margin-top:12px"></div>'+
+    '</div>'+
     '<div style="font-size:12px;color:var(--text2);text-align:right;margin-top:6px">Soru '+(quizSoru+1)+' / '+sorular.length+'</div>';
-  if(q.interaktif){
-    var intDiv = document.getElementById('quiz-interaktif');
-    if(intDiv) q.interaktif(intDiv);
-  }
 }
 
 function cevapla(el, secilen){
@@ -800,7 +797,11 @@ function cevapla(el, secilen){
     geri.classList.add('yanlis');
     geri.textContent = 'Yanlış. '+q.a;
   }
-  setTimeout(function(){ quizSoru++; soruGoster(); }, 2200);
+  if(q.interaktif){
+    var intDiv = document.getElementById('quiz-interaktif');
+    if(intDiv){ intDiv.style.display='block'; q.interaktif(intDiv); }
+  }
+  setTimeout(function(){ quizSoru++; soruGoster(); }, 2800);
 }
 
 function quizBitti(){
