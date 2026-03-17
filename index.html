@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matematik Platformu</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -111,7 +111,7 @@
       </div>
       <div id="giris-hata" class="hata-kutu" style="display:none"></div>
       <label style="font-size: 13px; color: var(--text2); display:block; margin-bottom: 6px;">Adın ne?</label>
-      <input type="text" id="kullanici-adi-input" placeholder="Adını yaz..." maxlength="30" style="margin-bottom: 12px;">
+      <input type="text" id="kullanici-adi-input" placeholder="Adını yaz..." maxlength="30" style="margin-bottom: 12px;" onkeydown="if(event.key==='Enter')girisYap()">
       <button class="btn btn-primary btn-block" onclick="girisYap()">Başla →</button>
     </div>
   </div>
@@ -591,7 +591,7 @@ function ekranGoster(id){
   if(id==='ekran-istatistik') istatGuncelle();
 }
 
-async function girisYap(){
+function girisYap(){
   var ad = document.getElementById('kullanici-adi-input').value.trim();
   if(!ad){ 
     document.getElementById('giris-hata').style.display='block';
@@ -602,7 +602,7 @@ async function girisYap(){
   document.getElementById('hosgeldin-isim').textContent = ad;
   document.getElementById('giris-hata').style.display='none';
   ekranGoster('ekran-anasayfa');
-  await ilerlemeyiYukle();
+  ilerlemeyiYukle();
 }
 
 function cikisYap(){
@@ -612,17 +612,20 @@ function cikisYap(){
   ekranGoster('ekran-giris');
 }
 
-async function ilerlemeyiYukle(){
+function ilerlemeyiYukle(){
   document.getElementById('yukleniyor-dersleri').style.display='block';
   document.getElementById('ders-listesi').innerHTML='';
-  try {
-    var res = await sb.from('ilerleme').select('*').eq('kullanici_adi', aktifKullanici);
-    ilerlemeVerisi = res.data || [];
-  } catch(e) {
-    ilerlemeVerisi = [];
-  }
-  document.getElementById('yukleniyor-dersleri').style.display='none';
-  anaSayfaGuncelle();
+  sb.from('ilerleme').select('*').eq('kullanici_adi', aktifKullanici)
+    .then(function(res){
+      ilerlemeVerisi = (res && res.data) ? res.data : [];
+      document.getElementById('yukleniyor-dersleri').style.display='none';
+      anaSayfaGuncelle();
+    })
+    .catch(function(e){
+      ilerlemeVerisi = [];
+      document.getElementById('yukleniyor-dersleri').style.display='none';
+      anaSayfaGuncelle();
+    });
 }
 
 function dersTamamlandiMi(dersId){
@@ -715,20 +718,19 @@ function cevapla(el, secilen){
   setTimeout(function(){ quizSoru++; soruGoster(); }, 2200);
 }
 
-async function quizBitti(){
+function quizBitti(){
   var toplam = aktifDers.sorular.length;
   var pct = Math.round((quizDogru/toplam)*100);
 
-  try {
-    await sb.from('ilerleme').upsert({
-      kullanici_adi: aktifKullanici,
-      ders_id: aktifDers.id,
-      tamamlandi: true,
-      skor: quizDogru,
-      tarih: new Date().toISOString()
-    }, { onConflict: 'kullanici_adi,ders_id' });
-    await ilerlemeyiYukle();
-  } catch(e) {}
+  sb.from('ilerleme').upsert({
+    kullanici_adi: aktifKullanici,
+    ders_id: aktifDers.id,
+    tamamlandi: true,
+    skor: quizDogru,
+    tarih: new Date().toISOString()
+  }, { onConflict: 'kullanici_adi,ders_id' })
+  .then(function(){ ilerlemeyiYukle(); })
+  .catch(function(){});
 
   var daire = document.getElementById('sonuc-daire');
   daire.style.background = pct>=70?'var(--green-bg)':'var(--red-bg)';
