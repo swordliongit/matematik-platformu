@@ -6,861 +6,1299 @@
 <title>Matematik Platformu</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeece6;
-    --text: #1a1a18; --text2: #5f5e5a; --text3: #9a9890;
-    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
-    --blue: #185FA5; --blue-bg: #E6F1FB; --blue-text: #0C447C;
-    --green: #3B6D11; --green-bg: #EAF3DE; --green-text: #27500A;
-    --red: #A32D2D; --red-bg: #FCEBEB; --red-text: #791F1F;
-    --amber: #854F0B; --amber-bg: #FAEEDA; --amber-text: #633806;
-    --purple: #534AB7; --purple-bg: #EEEDFE; --purple-text: #3C3489;
-    --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-text: #085041;
-    --radius: 8px; --radius-lg: 12px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeece6;
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#9a9890;
+  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-text:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-text:#27500A;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-text:#791F1F;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-text:#633806;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-text:#3C3489;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-text:#085041;
+  --r:8px;--rl:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#242422;--bg3:#2c2c2a;
+    --text:#e8e6de;--text2:#9a9890;--text3:#6a6864;
+    --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);
+    --blue:#378ADD;--blue-bg:#042C53;--blue-text:#B5D4F4;
+    --green:#639922;--green-bg:#173404;--green-text:#C0DD97;
+    --red:#E24B4A;--red-bg:#501313;--red-text:#F7C1C1;
+    --amber:#EF9F27;--amber-bg:#412402;--amber-text:#FAC775;
+    --purple:#7F77DD;--purple-bg:#26215C;--purple-text:#CECBF6;
+    --teal:#1D9E75;--teal-bg:#04342C;--teal-text:#9FE1CB;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
-      --text: #e8e6de; --text2: #9a9890; --text3: #6a6864;
-      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
-      --blue: #378ADD; --blue-bg: #042C53; --blue-text: #B5D4F4;
-      --green: #639922; --green-bg: #173404; --green-text: #C0DD97;
-      --red: #E24B4A; --red-bg: #501313; --red-text: #F7C1C1;
-      --amber: #EF9F27; --amber-bg: #412402; --amber-text: #FAC775;
-      --purple: #7F77DD; --purple-bg: #26215C; --purple-text: #CECBF6;
-      --teal: #1D9E75; --teal-bg: #04342C; --teal-text: #9FE1CB;
-    }
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
-  .container { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem; }
-  .ekran { display: none; }
-  .ekran.aktif { display: block; }
-  .kart { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
-  .btn { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 0.5rem 1rem; font-size: 13px; cursor: pointer; color: var(--text); transition: background .15s; font-family: inherit; }
-  .btn:hover { background: var(--bg2); }
-  .btn-primary { background: var(--blue); color: var(--blue-bg); border-color: var(--blue); }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-block { width: 100%; text-align: center; padding: 0.65rem 1rem; }
-  .nav-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
-  .nav-baslik { font-size: 15px; font-weight: 500; flex: 1; }
-  .ilerleme-bar-dis { background: var(--bg2); border-radius: 4px; height: 6px; overflow: hidden; margin: 6px 0; }
-  .ilerleme-bar-ic { height: 100%; background: var(--blue); border-radius: 4px; transition: width .4s; }
-  .istat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
-  .istat-kart { background: var(--bg2); border-radius: var(--radius); padding: 0.85rem 1rem; text-align: center; }
-  .istat-sayi { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
-  .istat-label { font-size: 12px; color: var(--text2); }
-  .ders-kart { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color .15s; }
-  .ders-kart:hover { border-color: var(--border2); }
-  .ders-kart.tamamlandi { border-color: var(--green); }
-  .ders-kart.kilitli { opacity: .5; cursor: default; }
-  .ders-no { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
-  .bilgi-kutu { background: var(--bg2); border-radius: var(--radius); padding: 0.85rem 1rem; font-size: 13px; line-height: 1.6; margin: 10px 0; }
-  .secenek-btn { width: 100%; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 0.65rem 1rem; font-size: 13px; cursor: pointer; text-align: left; color: var(--text); transition: all .15s; margin-bottom: 8px; font-family: inherit; }
-  .secenek-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--bg2); }
-  .secenek-btn.dogru { border-color: var(--green) !important; background: var(--green-bg) !important; color: var(--green-text); }
-  .secenek-btn.yanlis { border-color: var(--red) !important; background: var(--red-bg) !important; color: var(--red-text); }
-  .quiz-ilerleme { display: flex; gap: 5px; margin-bottom: 12px; }
-  .quiz-nokta { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
-  .quiz-nokta.aktif { background: var(--blue); }
-  .quiz-nokta.bitti { background: var(--green); }
-  .geri-bildirim { font-size: 13px; padding: 0.65rem 1rem; border-radius: var(--radius); margin-top: 6px; }
-  .geri-bildirim.dogru { background: var(--green-bg); color: var(--green-text); }
-  .geri-bildirim.yanlis { background: var(--red-bg); color: var(--red-text); }
-  .rozet-kazanildi { background: var(--green-bg); color: var(--green-text); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; font-weight: 500; display: inline-block; }
-  .rozet-kilitli { background: var(--bg2); color: var(--text3); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; display: inline-block; }
-  .sonuc-daire { width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1rem; }
-  .icerik-bolum { margin-bottom: 1.25rem; }
-  .icerik-bolum h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-  .icerik-bolum p { font-size: 13px; color: var(--text2); line-height: 1.65; }
-  .sayi-dogrusu { position: relative; margin: 1.25rem 0; }
-  .sd-cubuk { height: 4px; background: var(--border); border-radius: 2px; position: relative; margin: 20px 0 8px; }
-  .sd-nokta { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 13px; height: 13px; border-radius: 50%; cursor: pointer; transition: transform .15s; }
-  .sd-nokta:hover { transform: translate(-50%, -50%) scale(1.35); }
-  .sd-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); }
-  .term-wrap { display: flex; align-items: center; gap: 16px; margin: 1rem 0; }
-  .term-cubuk { width: 18px; height: 140px; background: var(--bg2); border-radius: 9px; position: relative; overflow: hidden; border: 0.5px solid var(--border); flex-shrink: 0; }
-  .term-ic { position: absolute; bottom: 0; width: 100%; border-radius: 0 0 9px 9px; transition: height .25s, background .25s; }
-  .bs-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 1rem 0; }
-  .bs-kart { border-radius: var(--radius); padding: 0.85rem; text-align: center; cursor: pointer; transition: opacity .15s; }
-  .bs-kart:hover { opacity: 0.8; }
-  .gol-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 1rem 0; }
-  .gol-kart { border-radius: var(--radius); padding: 1rem; text-align: center; }
-  input[type=range] { width: 100%; accent-color: var(--blue); }
-  input[type=text] { width: 100%; padding: 0.65rem 1rem; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 15px; font-family: inherit; outline: none; }
-  input[type=text]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
-  h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
-  .muted { font-size: 13px; color: var(--text2); }
-  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius); padding: 3px 8px; font-size: 12px; font-weight: 500; }
-  .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
-  .badge-green { background: var(--green-bg); color: var(--green-text); }
-  .yukleniyor { text-align: center; padding: 2rem; color: var(--text2); font-size: 13px; }
-  .hata-kutu { background: var(--red-bg); color: var(--red-text); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; margin-bottom: 1rem; }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
+.container{max-width:700px;margin:0 auto;padding:1.5rem 1rem}
+.ekran{display:none}.ekran.aktif{display:block}
+.kart{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
+.btn{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--r);padding:0.5rem 1rem;font-size:13px;cursor:pointer;color:var(--text);font-family:inherit;transition:background .15s}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--blue);color:#E6F1FB;border-color:var(--blue)}
+.btn-primary:hover{opacity:.9}
+.btn-block{width:100%;padding:.65rem 1rem;text-align:center}
+.nav-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.nav-baslik{font-size:15px;font-weight:500;flex:1}
+.ilerleme-bar-dis{background:var(--bg2);border-radius:4px;height:6px;overflow:hidden;margin:6px 0}
+.ilerleme-bar-ic{height:100%;background:var(--blue);border-radius:4px;transition:width .4s}
+.ders-kart{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
+.ders-kart:hover{border-color:var(--border2)}
+.ders-kart.tamamlandi{border-color:var(--green)}
+.ders-kart.kilitli{opacity:.5;cursor:default}
+.ders-no{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+/* Anlatım */
+.bolum{margin-bottom:1.5rem}
+.bolum h3{font-size:15px;font-weight:500;margin-bottom:8px}
+.bolum p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:6px}
+.bilgi-kutu{background:var(--bg2);border-radius:var(--r);padding:.85rem 1rem;font-size:13px;line-height:1.65;margin:10px 0}
+.adim-kutu{border-left:3px solid var(--blue);padding:.75rem 1rem;background:var(--blue-bg);border-radius:0 var(--r) var(--r) 0;margin:8px 0;font-size:13px;color:var(--blue-text)}
+.ornek-kutu{border-left:3px solid var(--teal);padding:.75rem 1rem;background:var(--teal-bg);border-radius:0 var(--r) var(--r) 0;margin:8px 0;font-size:13px;color:var(--teal-text)}
+/* Quiz */
+.secenek-btn{width:100%;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--r);padding:.65rem 1rem;font-size:14px;cursor:pointer;text-align:left;color:var(--text);transition:all .15s;margin-bottom:8px;font-family:inherit}
+.secenek-btn:hover:not(:disabled){border-color:var(--blue);background:var(--bg2)}
+.secenek-btn.dogru{border-color:var(--green)!important;background:var(--green-bg)!important;color:var(--green-text)}
+.secenek-btn.yanlis{border-color:var(--red)!important;background:var(--red-bg)!important;color:var(--red-text)}
+.cozum-kutu{border-radius:var(--r);padding:1rem;margin-top:12px;font-size:13px;line-height:1.8;display:none}
+.cozum-kutu.dogru-cozum{background:var(--green-bg);border:0.5px solid var(--green);color:var(--green-text)}
+.cozum-kutu.yanlis-cozum{background:var(--red-bg);border:0.5px solid var(--red);color:var(--red-text)}
+.cozum-adim{background:rgba(255,255,255,0.5);border-radius:var(--r);padding:.5rem .75rem;margin-top:8px;font-size:13px}
+.quiz-ilerleme{display:flex;gap:5px;margin-bottom:12px}
+.quiz-nokta{width:8px;height:8px;border-radius:50%;background:var(--border2)}
+.quiz-nokta.aktif{background:var(--blue)}
+.quiz-nokta.dogru-nokta{background:var(--green)}
+.quiz-nokta.yanlis-nokta{background:var(--red)}
+.istat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.istat-kart{background:var(--bg2);border-radius:var(--r);padding:.85rem 1rem;text-align:center}
+.istat-sayi{font-size:22px;font-weight:500;margin-bottom:2px}
+.istat-label{font-size:12px;color:var(--text2)}
+.rozet-kazanildi{background:var(--green-bg);color:var(--green-text);border-radius:var(--r);padding:4px 10px;font-size:12px;font-weight:500;display:inline-block}
+.rozet-kilitli{background:var(--bg2);color:var(--text3);border-radius:var(--r);padding:4px 10px;font-size:12px;display:inline-block}
+.sonuc-daire{width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem}
+input[type=text]{width:100%;padding:.65rem 1rem;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:15px;font-family:inherit;outline:none}
+input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.badge{display:inline-flex;align-items:center;border-radius:var(--r);padding:3px 8px;font-size:12px;font-weight:500}
+.badge-blue{background:var(--blue-bg);color:var(--blue-text)}
+.badge-green{background:var(--green-bg);color:var(--green-text)}
+.yukleniyor{text-align:center;padding:2rem;color:var(--text2);font-size:13px}
 </style>
 </head>
 <body>
 <div class="container">
 
-  <!-- Giriş ekranı -->
-  <div id="ekran-giris" class="ekran aktif">
-    <div class="kart" style="margin-top: 3rem;">
-      <div style="text-align:center; margin-bottom: 1.5rem;">
-        <div style="font-size: 32px; margin-bottom: 8px;">📐</div>
-        <h1>Matematik Platformu</h1>
-        <p class="muted">Sıfırdan ileri seviyeye</p>
-      </div>
-      <div id="giris-hata" class="hata-kutu" style="display:none"></div>
-      <label style="font-size: 13px; color: var(--text2); display:block; margin-bottom: 6px;">Adın ne?</label>
-      <input type="text" id="kullanici-adi-input" placeholder="Adını yaz..." maxlength="30" style="margin-bottom: 12px;" onkeydown="if(event.key==='Enter')girisYap()">
-      <button class="btn btn-primary btn-block" onclick="girisYap()">Başla →</button>
+<!-- Giriş -->
+<div id="ekran-giris" class="ekran aktif">
+  <div class="kart" style="margin-top:3rem;max-width:420px;margin-left:auto;margin-right:auto">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:36px;margin-bottom:8px">📐</div>
+      <h1 style="font-size:20px;font-weight:500;margin-bottom:4px">Matematik Platformu</h1>
+      <p style="font-size:13px;color:var(--text2)">Sıfırdan ileri seviyeye</p>
     </div>
+    <div id="giris-hata" style="display:none;background:var(--red-bg);color:var(--red-text);border-radius:var(--r);padding:.65rem 1rem;font-size:13px;margin-bottom:10px"></div>
+    <label style="font-size:13px;color:var(--text2);display:block;margin-bottom:6px">Adın ne?</label>
+    <input type="text" id="isim-input" placeholder="Adını yaz..." maxlength="30" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')girisYap()">
+    <button class="btn btn-primary btn-block" onclick="girisYap()">Başla →</button>
   </div>
-
-  <!-- Ana sayfa -->
-  <div id="ekran-anasayfa" class="ekran">
-    <div class="kart">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem">
-        <div>
-          <h1>Matematik Platformu</h1>
-          <p class="muted">Hoş geldin, <span id="hosgeldin-isim" style="color:var(--blue);font-weight:500"></span>!</p>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" onclick="ekranGoster('ekran-istatistik')">İstatistikler</button>
-          <button class="btn" onclick="cikisYap()" style="color:var(--text3)">Çıkış</button>
-        </div>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text2); margin-bottom:4px">
-        <span>Genel ilerleme</span><span id="genel-pct">0%</span>
-      </div>
-      <div class="ilerleme-bar-dis"><div class="ilerleme-bar-ic" id="genel-bar" style="width:0%"></div></div>
-    </div>
-    <div style="font-size:12px; font-weight:500; color:var(--text2); margin-bottom:10px; letter-spacing:.05em">AŞAMA 1 — SAYILAR</div>
-    <div id="ders-listesi"></div>
-    <div id="yukleniyor-dersleri" class="yukleniyor">İlerleme yükleniyor...</div>
-    <p style="font-size:12px; color:var(--text3); text-align:center; margin-top:1rem">Daha fazla ders yakında eklenecek</p>
-  </div>
-
-  <!-- Ders ekranı -->
-  <div id="ekran-ders" class="ekran">
-    <div class="nav-bar">
-      <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
-      <div class="nav-baslik" id="ders-baslik-nav"></div>
-    </div>
-    <div id="ders-icerik"></div>
-    <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="dersQuizBaslat()">Quiz'e Geç →</button>
-  </div>
-
-  <!-- Quiz ekranı -->
-  <div id="ekran-quiz" class="ekran">
-    <div class="nav-bar">
-      <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Çık</button>
-      <div class="nav-baslik" id="quiz-baslik-nav"></div>
-    </div>
-    <div id="quiz-icerik"></div>
-  </div>
-
-  <!-- Sonuç ekranı -->
-  <div id="ekran-sonuc" class="ekran">
-    <div class="kart" style="text-align:center; padding:2rem 1.25rem">
-      <div class="sonuc-daire" id="sonuc-daire">
-        <div style="font-size:22px; font-weight:500" id="sonuc-sayi"></div>
-        <div style="font-size:11px" id="sonuc-alt"></div>
-      </div>
-      <div style="font-size:16px; font-weight:500; margin-bottom:6px" id="sonuc-baslik"></div>
-      <p class="muted" id="sonuc-metin" style="margin-bottom:1.25rem"></p>
-      <div id="sonuc-rozet-alan" style="margin-bottom:1.25rem"></div>
-      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
-        <button class="btn" onclick="ekranGoster('ekran-anasayfa')">Ana Sayfa</button>
-        <button class="btn btn-primary" id="sonuc-sonraki-btn">Sonraki Ders →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- İstatistik ekranı -->
-  <div id="ekran-istatistik" class="ekran">
-    <div class="nav-bar">
-      <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
-      <div class="nav-baslik">İstatistikler</div>
-    </div>
-    <div class="istat-grid">
-      <div class="istat-kart"><div class="istat-sayi" id="is-tamamlanan" style="color:var(--blue)">0</div><div class="istat-label">Tamamlanan ders</div></div>
-      <div class="istat-kart"><div class="istat-sayi" id="is-dogru" style="color:var(--green)">0</div><div class="istat-label">Doğru cevap</div></div>
-      <div class="istat-kart"><div class="istat-sayi" id="is-rozet" style="color:var(--amber)">0</div><div class="istat-label">Kazanılan rozet</div></div>
-    </div>
-    <div class="kart">
-      <div style="font-size:14px; font-weight:500; margin-bottom:12px">Rozetler</div>
-      <div id="rozet-listesi"></div>
-    </div>
-  </div>
-
 </div>
 
+<!-- Ana sayfa -->
+<div id="ekran-anasayfa" class="ekran">
+  <div class="kart">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <div>
+        <div style="font-size:18px;font-weight:500">Matematik Platformu</div>
+        <div style="font-size:13px;color:var(--text2)">Hoş geldin, <span id="hosgeldin" style="color:var(--blue);font-weight:500"></span>!</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="ekranGoster('ekran-istatistik')">İstatistikler</button>
+        <button class="btn" onclick="cikisYap()" style="color:var(--text3)">Çıkış</button>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px">
+      <span>Genel ilerleme</span><span id="genel-pct">0%</span>
+    </div>
+    <div class="ilerleme-bar-dis"><div class="ilerleme-bar-ic" id="genel-bar" style="width:0%"></div></div>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px;letter-spacing:.05em">AŞAMA 1 — SAYILAR</div>
+  <div id="ders-listesi"></div>
+  <div id="yukleniyor" class="yukleniyor" style="display:none">Yükleniyor...</div>
+  <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:1rem">Daha fazla ders yakında eklenecek</p>
+</div>
+
+<!-- Ders (anlatım) -->
+<div id="ekran-ders" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
+    <div class="nav-baslik" id="ders-nav-baslik"></div>
+  </div>
+  <div id="ders-icerik"></div>
+  <button class="btn btn-primary btn-block" onclick="quizBaslat()" style="margin-top:.5rem">Quize Geç →</button>
+</div>
+
+<!-- Quiz -->
+<div id="ekran-quiz" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Çık</button>
+    <div class="nav-baslik" id="quiz-nav-baslik"></div>
+  </div>
+  <div id="quiz-icerik"></div>
+</div>
+
+<!-- Sonuç -->
+<div id="ekran-sonuc" class="ekran">
+  <div class="kart" style="text-align:center;padding:2rem 1.25rem">
+    <div class="sonuc-daire" id="sonuc-daire">
+      <div style="font-size:22px;font-weight:500" id="sonuc-sayi"></div>
+      <div style="font-size:11px" id="sonuc-alt"></div>
+    </div>
+    <div style="font-size:16px;font-weight:500;margin-bottom:6px" id="sonuc-baslik"></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem" id="sonuc-metin"></p>
+    <div id="sonuc-rozet" style="margin-bottom:1.25rem"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn" onclick="ekranGoster('ekran-anasayfa')">Ana Sayfa</button>
+      <button class="btn btn-primary" id="sonraki-btn">Sonraki Ders →</button>
+    </div>
+  </div>
+</div>
+
+<!-- İstatistik -->
+<div id="ekran-istatistik" class="ekran">
+  <div class="nav-bar">
+    <button class="btn" onclick="ekranGoster('ekran-anasayfa')">← Geri</button>
+    <div class="nav-baslik">İstatistikler</div>
+  </div>
+  <div class="istat-grid">
+    <div class="istat-kart"><div class="istat-sayi" id="is-tam" style="color:var(--blue)">0</div><div class="istat-label">Tamamlanan</div></div>
+    <div class="istat-kart"><div class="istat-sayi" id="is-dogru" style="color:var(--green)">0</div><div class="istat-label">Doğru cevap</div></div>
+    <div class="istat-kart"><div class="istat-sayi" id="is-rozet" style="color:var(--amber)">0</div><div class="istat-label">Rozet</div></div>
+  </div>
+  <div class="kart">
+    <div style="font-size:14px;font-weight:500;margin-bottom:12px">Rozetler</div>
+    <div id="rozet-listesi"></div>
+  </div>
+</div>
+
+</div>
 <script>
-var SUPABASE_URL = 'https://xecamkzeshrdjagmoiji.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_D6CM49ijH88ULkeet7UpAw_LZPraiDj';
-var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var SB_URL='https://xecamkzeshrdjagmoiji.supabase.co';
+var SB_KEY='sb_publishable_D6CM49ijH88ULkeet7UpAw_LZPraiDj';
+var sb=supabase.createClient(SB_URL,SB_KEY);
 
-var DERSLER = [
-  {
-    id:'d1', baslik:'Sayı doğrusu ve tam sayılar', renk:'#E6F1FB', renk2:'#185FA5',
-    rozet:{id:'r1', ad:'Sayı Kafası', acik:'Sayı doğrusu dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart"><div class="icerik-bolum"><h3>Sayılar nerede yaşıyor?</h3><p>Her sayı bir çizgi üzerinde bir noktadır. Bu çizgiye <strong>sayı doğrusu</strong> diyoruz. Solda küçük, sağda büyük sayılar bulunur.</p></div>'+
-      '<div class="sayi-dogrusu"><div class="sd-cubuk" id="sd1"></div><div class="sd-label"><span>-15</span><span>-5</span><span>0</span><span>10</span><span>20</span><span>37</span></div></div>'+
-      '<div class="bilgi-kutu" id="sd-acik">Noktalara tıkla, gerçek hayattan örnekleri gör.</div>'+
-      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Negatif sayılar</h3><p>Sıfırın solundaki sayılar negatiftir. -5°C: suyun donmasına 5 derece kalmış demektir. Banka borcu, deniz seviyesinin altı, eksik gol farkı — negatif sayılar her yerde.</p></div>'+
-      '<div class="term-wrap"><div class="term-cubuk"><div class="term-ic" id="tmic" style="height:45%;background:#378ADD"></div></div><div style="flex:1"><label style="font-size:12px;color:var(--text2)">Sıcaklık</label><input type="range" min="-20" max="50" value="0" id="tslider" style="margin:6px 0"><div class="bilgi-kutu" id="term-acik2" style="margin-top:0">Termometreyi sürükle.</div></div></div></div>';
+/* ========== DERS VERİSİ ========== */
+var DERSLER=[
+{
+  id:'d1',baslik:'Sayı doğrusu ve tam sayılar',renk:'#E6F1FB',renk2:'#185FA5',
+  rozet:{id:'r1',ad:'Sayı Kafası',acik:'Sayı doğrusu dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Sayılar nerede yaşıyor?</h3>'+
+      '<p>Sayıları bir çizgi üzerinde düşün. Bu çizgiye <strong>sayı doğrusu</strong> denir. Solda küçük sayılar, sağda büyük sayılar bulunur. Ortada ise <strong>sıfır (0)</strong> vardır.</p>'+
+      '<div style="position:relative;margin:1.5rem 0">'+
+        '<div style="height:4px;background:var(--border2);border-radius:2px;position:relative" id="sd-cubuk"></div>'+
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:6px"><span>-10</span><span>-5</span><span>0</span><span>5</span><span>10</span></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu" id="sd-acik">Noktalara tıkla, her sayının gerçek hayattaki karşılığını gör.</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Negatif sayılar nedir?</h3>'+
+      '<p>Sıfırın solundaki sayılara <strong>negatif sayı</strong> denir. Önlerine eksi (-) işareti koyulur. Günlük hayatta sıkça karşılaşırız:</p>'+
+      '<div class="ornek-kutu">❄️ Hava -5°C → Sıfırın 5 derece altında, donma tehlikesi</div>'+
+      '<div class="ornek-kutu">🏦 Hesapta -250 TL → 250 TL borcumuz var</div>'+
+      '<div class="ornek-kutu">🏢 Asansör -1. kat → Zemin katın 1 kat altı (bodrum)</div>'+
+      '<p>Sıfırın sağındaki sayılar ise <strong>pozitif</strong> sayılardır. Genellikle işaret koyulmaz ama +5 de yazılabilir.</p>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Termometre: negatif sayı pratiği</h3>'+
+      '<p>Termometreyi sürükle, sıcaklığın sayı doğrusunda nerede durduğunu gör.</p>'+
+      '<div style="display:flex;align-items:center;gap:16px;margin:1rem 0">'+
+        '<div style="width:18px;height:150px;background:var(--bg2);border-radius:9px;position:relative;overflow:hidden;border:0.5px solid var(--border);flex-shrink:0">'+
+          '<div id="term-ic" style="position:absolute;bottom:0;width:100%;border-radius:0 0 9px 9px;transition:height .2s,background .2s;height:45%"></div>'+
+        '</div>'+
+        '<div style="flex:1">'+
+          '<input type="range" id="term-slider" min="-20" max="50" value="0" oninput="termGuncelle(this.value)">'+
+          '<div id="term-acik" class="bilgi-kutu" style="margin-top:8px">Kaydır ve gözlemle.</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Tam sayılar</h3>'+
+      '<p>Tam sayılar, kesirli olmayan sayılardır: ..., -3, -2, -1, 0, 1, 2, 3, ...</p>'+
+      '<p>Üç gruba ayrılır:</p>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:1rem 0">'+
+        '<div style="background:var(--red-bg);border-radius:var(--r);padding:1rem;text-align:center"><div style="font-size:11px;color:var(--red-text);font-weight:500;margin-bottom:6px">NEGATİF</div><div style="font-size:13px;color:var(--red-text);line-height:1.8">...<br>-3, -2, -1</div></div>'+
+        '<div style="background:var(--bg2);border-radius:var(--r);padding:1rem;text-align:center;border:1.5px solid var(--border2)"><div style="font-size:11px;color:var(--text2);font-weight:500;margin-bottom:6px">SIFIR</div><div style="font-size:28px;font-weight:500">0</div></div>'+
+        '<div style="background:var(--green-bg);border-radius:var(--r);padding:1rem;text-align:center"><div style="font-size:11px;color:var(--green-text);font-weight:500;margin-bottom:6px">POZİTİF</div><div style="font-size:13px;color:var(--green-text);line-height:1.8">1, 2, 3...<br>&nbsp;</div></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu">Sıfır ne pozitif ne negatiftir. Tam ortada, denge noktasıdır. 2,5 veya 1/2 gibi kesirli sayılar ise tam sayı DEĞİLDİR.</div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var noktalar=[
+      {x:5,sayi:-10,r:'#378ADD',a:'-10°C: Erzurum\'da kış gecesi. Buz tehlikesi var.'},
+      {x:25,sayi:-5,r:'#85B7EB',a:'-5°C: Derin dondurucu sıcaklığı.'},
+      {x:50,sayi:0,r:'#888',a:'0°C: Donma noktası. Ne sıcak ne soğuk.'},
+      {x:72,sayi:5,r:'#97C459',a:'+5°C: Serin bir kış sabahı.'},
+      {x:90,sayi:10,r:'#0F6E56',a:'+10°C: Güzel bir bahar havası.'}
+    ];
+    var c=document.getElementById('sd-cubuk');
+    if(!c)return;
+    noktalar.forEach(function(n){
+      var d=document.createElement('div');
+      d.style.cssText='position:absolute;top:50%;left:'+n.x+'%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:'+n.r+';cursor:pointer;transition:transform .15s';
+      d.onmouseover=function(){this.style.transform='translate(-50%,-50%) scale(1.4)'};
+      d.onmouseout=function(){this.style.transform='translate(-50%,-50%) scale(1)'};
+      d.onclick=function(){document.getElementById('sd-acik').textContent=n.a};
+      c.appendChild(d);
+    });
+    termGuncelle(0);
+  },
+  sorular:[
+    {
+      s:'Kayseri\'de hava bugün -8°C. Bu ne anlama gelir?',
+      sec:['Sıfırın 8 derece altında, çok soğuk','8 derece sıcak, güzel bir gün','Termometre bozuk','Sıfır derece ile aynı şey'],
+      d:0,
+      cozum:{
+        sonuc:'Doğru! -8°C, sıfırın 8 derece altıdır.',
+        adimlar:[
+          'Sayı doğrusunda 0 orta noktadır.',
+          'Negatif sayılar (-) sıfırın solunda, yani daha düşük sıcaklıklardadır.',
+          '-8°C → sıfırdan 8 birim sola git → çok soğuk, buz tehlikesi var.'
+        ]
+      }
     },
-    kurulum: function(){
-      var noktalar=[{x:5,a:'❄️ -15°C: Erzurum kış gecesi. Buz tehlikesi.',r:'#378ADD'},{x:22,a:'🧊 -5°C: Derin dondurucu sıcaklığı.',r:'#85B7EB'},{x:42,a:'⚖️ 0°C: Donma noktası. Ne pozitif ne negatif.',r:'#888780'},{x:62,a:'🌱 +10°C: Serin bir bahar sabahı.',r:'#639922'},{x:78,a:'☀️ +20°C: Güzel bir İzmir günü.',r:'#BA7517'},{x:92,a:'🌡️ +37°C: Vücudun normal ısısı.',r:'#E24B4A'}];
-      var c=document.getElementById('sd1');
-      if(!c)return;
-      noktalar.forEach(function(n){
-        var d=document.createElement('div');d.className='sd-nokta';d.style.left=n.x+'%';d.style.background=n.r;
-        d.onclick=function(){document.getElementById('sd-acik').textContent=n.a};
-        c.appendChild(d);
+    {
+      s:'Sayı doğrusunda -4 ile 2\'den hangisi daha soldadır?',
+      sec:['-4','2','İkisi aynı yerde','Karşılaştırılamaz'],
+      d:0,
+      cozum:{
+        sonuc:'Doğru! -4, sayı doğrusunun solundadır.',
+        adimlar:[
+          'Sayı doğrusunda solda küçük, sağda büyük sayılar bulunur.',
+          '-4 negatif olduğu için sıfırın solundadır.',
+          '2 pozitif olduğu için sıfırın sağındadır.',
+          'Dolayısıyla -4, 2\'den çok daha soldadır.'
+        ]
+      }
+    },
+    {
+      s:'Bir binanın asansöründe "-2" yazar. Bu hangi kattır?',
+      sec:['2. kat','Zemin kat','Bodrumun 2 kat altı, zemin altı 2. kat','En üst kat'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! -2, zemin katın 2 kat aşağısıdır.',
+        adimlar:[
+          'Asansörde 0 zemin kattır (giriş seviyesi).',
+          'Pozitif sayılar (1, 2, 3...) yukarı katları gösterir.',
+          'Negatif sayılar (-1, -2...) bodrum katları gösterir.',
+          '-2 → zemin katın 2 kat altı → bodrumdur.'
+        ]
+      }
+    },
+    {
+      s:'Banka hesabında -150 TL yazan kişi ne durumda?',
+      sec:['150 TL birikimi var','Hesabı boş','150 TL borcu var','Faiz kazanıyor'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! Negatif bakiye borç anlamına gelir.',
+        adimlar:[
+          '0 TL → hesap boş, ne para var ne borç var.',
+          'Pozitif değer (örn. +150 TL) → bakiyemiz var, para var.',
+          'Negatif değer (-150 TL) → sıfırın altına düşmüş → borçluyuz.',
+          '-150 TL → bankaya 150 TL borcumuz var.'
+        ]
+      }
+    },
+    {
+      s:'Hangisi tam sayı DEĞİLDİR?',
+      sec:['-3','0','7','2,5'],
+      d:3,
+      cozum:{
+        sonuc:'Doğru! 2,5 tam sayı değildir, kesirlidir.',
+        adimlar:[
+          'Tam sayılar: ..., -3, -2, -1, 0, 1, 2, 3, ... — hiç kesir içermez.',
+          '-3 → tam sayı ✓',
+          '0 → tam sayı ✓',
+          '7 → tam sayı ✓',
+          '2,5 → virgüllü/kesirli sayı → TAM SAYI DEĞİL ✗'
+        ]
+      }
+    },
+    {
+      s:'Deniz seviyesi 0 metre kabul edilirse, 40 metre derinlikteki balık hangi değerdedir?',
+      sec:['+40','-40','0','40 metre'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! Deniz altı negatif değerlerle gösterilir.',
+        adimlar:[
+          'Deniz yüzeyi = 0 metre (referans nokta).',
+          'Yüzeyin üstü (+) → örn. uçak +10.000 m.',
+          'Yüzeyin altı (-) → deniz altı eksi değer alır.',
+          '40 metre derinlik → -40 metre.'
+        ]
+      }
+    },
+    {
+      s:'-5 ile +5 sayısından hangisi sıfıra daha yakındır?',
+      sec:['-5','+5','İkisi de eşit uzaklıkta','Karşılaştırılamaz'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! Her ikisi de sıfıra eşit uzaklıktadır.',
+        adimlar:[
+          'Sayı doğrusunda -5, sıfırın 5 birim solundadır.',
+          '+5 ise sıfırın 5 birim sağındadır.',
+          'İki sayı da sıfırdan tam olarak 5 birim uzaktadır.',
+          'Bu mesafeye "mutlak değer" denir: her ikisi de |5| = 5.'
+        ]
+      }
+    },
+    {
+      s:'Aşağıdaki sayıları küçükten büyüğe sırala: -3, 5, 0, -7, 2',
+      sec:['-7, -3, 0, 2, 5','0, -3, -7, 2, 5','5, 2, 0, -3, -7','-3, -7, 0, 2, 5'],
+      d:0,
+      cozum:{
+        sonuc:'Doğru! Sayı doğrusunda soldan sağa gidilir.',
+        adimlar:[
+          'Sayı doğrusunda en solda en küçük sayı bulunur.',
+          '-7 en solda (en küçük)',
+          '-3 sonraki',
+          '0 ortada',
+          '2 ve 5 sağda (en büyük) → sıra: -7, -3, 0, 2, 5'
+        ]
+      }
+    },
+    {
+      s:'Bir oyunda -10 puandan başladın ve 15 puan kazandın. Toplam puan kaç?',
+      sec:['-25','-5','5','25'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! -10 + 15 = 5.',
+        adimlar:[
+          'Başlangıç: -10 puan (ekside başlıyoruz).',
+          '+15 puan kazandık → sıfıra doğru gidiyoruz.',
+          '-10\'dan 10 adım sağa gidince 0\'a ulaşırız.',
+          'Kalan 5 adım daha sağa gidince +5\'e ulaşırız.',
+          'Sonuç: -10 + 15 = 5 puan.'
+        ]
+      }
+    },
+    {
+      s:'Hangisi doğrudur?',
+      sec:['Sıfır pozitif bir sayıdır','Sıfır negatif bir sayıdır','Sıfır ne pozitif ne negatiftir','2,5 bir tam sayıdır'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! Sıfır özel bir sayıdır.',
+        adimlar:[
+          'Sıfır sayı doğrusunun tam ortasındadır.',
+          'Pozitif sayılar: 0\'dan büyük (sağda).',
+          'Negatif sayılar: 0\'dan küçük (solda).',
+          'Sıfır ise ikisi de değil — ne pozitif ne negatif, tam ortada.'
+        ]
+      }
+    }
+  ]
+},
+{
+  id:'d2',baslik:'Sayı basamakları',renk:'#EAF3DE',renk2:'#3B6D11',
+  rozet:{id:'r2',ad:'Basamak Ustası',acik:'Sayı basamakları dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Rakamlar neden farklı değer taşır?</h3>'+
+      '<p>3752 sayısını ele alalım. İçindeki her rakam aynı değeri taşımaz. Rakamın hangi <strong>basamakta</strong> durduğu, onun gerçek değerini belirler.</p>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:1rem 0" id="bs-grid">'+
+        '<div class="bs-kart" style="background:#E6F1FB;border-radius:var(--r);padding:.85rem;text-align:center;cursor:pointer" onclick="bsAc(0)"><div style="font-size:10px;color:#185FA5;margin-bottom:4px">BİNLER</div><div style="font-size:26px;font-weight:500;color:#0C447C">3</div><div style="font-size:11px;color:#185FA5;margin-top:4px">= 3000</div></div>'+
+        '<div class="bs-kart" style="background:#EAF3DE;border-radius:var(--r);padding:.85rem;text-align:center;cursor:pointer" onclick="bsAc(1)"><div style="font-size:10px;color:#3B6D11;margin-bottom:4px">YÜZLER</div><div style="font-size:26px;font-weight:500;color:#27500A">7</div><div style="font-size:11px;color:#3B6D11;margin-top:4px">= 700</div></div>'+
+        '<div class="bs-kart" style="background:#FAEEDA;border-radius:var(--r);padding:.85rem;text-align:center;cursor:pointer" onclick="bsAc(2)"><div style="font-size:10px;color:#854F0B;margin-bottom:4px">ONLAR</div><div style="font-size:26px;font-weight:500;color:#633806">5</div><div style="font-size:11px;color:#854F0B;margin-top:4px">= 50</div></div>'+
+        '<div class="bs-kart" style="background:#FAECE7;border-radius:var(--r);padding:.85rem;text-align:center;cursor:pointer" onclick="bsAc(3)"><div style="font-size:10px;color:#993C1D;margin-bottom:4px">BİRLER</div><div style="font-size:26px;font-weight:500;color:#712B13">2</div><div style="font-size:11px;color:#993C1D;margin-top:4px">= 2</div></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu" id="bs-acik">Bir basamağa tıkla, nasıl hesaplandığını gör.</div>'+
+      '<div class="adim-kutu">3752 = 3×1000 + 7×100 + 5×10 + 2×1 = 3000 + 700 + 50 + 2</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Neden önemli?</h3>'+
+      '<p>Aynı rakam, farklı basamakta tamamen farklı değer taşır:</p>'+
+      '<div class="ornek-kutu">5 rakamı → BİRLER basamağında: 5 (beş)<br>5 rakamı → ONLAR basamağında: 50 (elli)<br>5 rakamı → YÜZLER basamağında: 500 (beş yüz)<br>5 rakamı → BİNLER basamağında: 5000 (beş bin)</div>'+
+      '<p>Yani rakamın değeri, sadece kendisi değil — <strong>konumuna göre</strong> belirlenir.</p>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Gerçek hayat: market fiyatı</h3>'+
+      '<p>2468 TL\'lik bir TV\'yi basamaklara ayıralım:</p>'+
+      '<div style="background:var(--bg2);border-radius:var(--rl);padding:1.25rem;margin:1rem 0">'+
+        '<div style="font-size:24px;font-weight:500;text-align:center;margin-bottom:12px;letter-spacing:8px">2468</div>'+
+        '<div id="fiyat-cubuklar" style="display:flex;flex-direction:column;gap:6px"></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Büyük sayılarda basamak</h3>'+
+      '<p>Basamaklar soldan sağa büyükten küçüğe gider:</p>'+
+      '<div style="overflow-x:auto;margin:1rem 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:center">'+
+        '<tr style="background:var(--bg2)"><td style="padding:8px;border:0.5px solid var(--border)">MİLYON</td><td style="padding:8px;border:0.5px solid var(--border)">YÜZ BİN</td><td style="padding:8px;border:0.5px solid var(--border)">ON BİN</td><td style="padding:8px;border:0.5px solid var(--border)">BİN</td><td style="padding:8px;border:0.5px solid var(--border)">YÜZ</td><td style="padding:8px;border:0.5px solid var(--border)">ON</td><td style="padding:8px;border:0.5px solid var(--border)">BİR</td></tr>'+
+        '<tr><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">1.000.000</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">100.000</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">10.000</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--blue);font-weight:500">1.000</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">100</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">10</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">1</td></tr>'+
+      '</table></div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var aciklar=[
+      '3 → BİNLER basamağı\n3 × 1000 = 3000\nBu basamak en ağır değeri taşır.',
+      '7 → YÜZLER basamağı\n7 × 100 = 700\nİkinci en değerli basamak.',
+      '5 → ONLAR basamağı\n5 × 10 = 50\nÜçüncü basamak.',
+      '2 → BİRLER basamağı\n2 × 1 = 2\nEn küçük değerli basamak.'
+    ];
+    window.bsAc=function(i){
+      document.getElementById('bs-acik').textContent=aciklar[i];
+      document.querySelectorAll('.bs-kart').forEach(function(k,j){
+        k.style.boxShadow=j===i?'0 0 0 2px var(--blue)':'none';
       });
-      var sl=document.getElementById('tslider');
-      if(!sl)return;
-      sl.oninput=function(){
-        var v=parseInt(sl.value);
-        var pct=((v+20)/70)*100;
-        document.getElementById('tmic').style.height=Math.max(4,pct)+'%';
-        document.getElementById('tmic').style.background=v<0?'#378ADD':v<20?'#1D9E75':v<37?'#BA7517':'#E24B4A';
-        var m=v<0?v+'°C: Negatif! Sıfırın altı. Buz oluşmaya başlar.':v===0?'0°C: Tam donma noktası.':v<20?v+'°C: Sıfırın '+v+' derece üstü. Pozitif.':v<37?v+'°C: Güzel hava!':v+'°C: Vücut ısısı seviyesi.';
-        document.getElementById('term-acik2').textContent=m;
-      };
-    },
-    sorular:[
-      {s:'Kayseri\'de hava -8°C. Bu ne anlama gelir?',sec:['Sıfırın 8 derece altında, buz tehlikesi var','8 derece sıcak, güzel bir gün','Termometre bozuk','Aynı şey'],d:0,a:'✓ Doğru! -8°C sıfırın 8 derece altı demek. Bu sıcaklıkta su donar.'},
-      {s:'Sayı doğrusunda -3 ile 5\'ten hangisi daha soldadır?',sec:['5','İkisi aynı yerde','-3','Fark etmez'],d:2,a:'✓ Doğru! Sayı doğrusu soldan sağa küçükten büyüğe gider. -3, 5\'ten küçük olduğu için soldadır.'},
-      
-      {s:'Vücut ısısı 37°C. Bu sayı doğrusunda 0\'ın neresinde?',sec:['Solunda','Üzerinde','Sağında','Sayı doğrusu dışında'],d:2,a:'✓ Doğru! 37 pozitif bir sayı olduğu için sıfırın sağında yer alır.'}
-    
-      ,{s:'Bir binanın bodrum katı -2. olarak gösteriliyor. Bu ne anlama gelir?',sec:['2. kat üstte','Zemin katın 2 kat altında','Bina 2 katlı','Hata var'],d:1,a:'✓ Doğru! Negatif kat numarası sıfırın (zemin katın) altını gösterir.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin:1rem 0">'+['2. kat','1. kat','Zemin (0)','Bodrum (-1)','-2. kat'].map(function(k,i){return'<div style="padding:6px 24px;border-radius:var(--radius);font-size:13px;font-weight:'+(i===4?'500':'400')+';background:'+(i===4?'var(--blue-bg)':i===2?'var(--bg2)':'var(--bg)')+';color:'+(i===4?'var(--blue-text)':'var(--text)')+';border:0.5px solid '+(i===4?'var(--blue)':'var(--border)')+'">'+k+'</div>';}).join('')+'</div>';}},
-      {s:'Sayı doğrusunda sıfırdan 3 birim sola gidersek nereye ulaşırız?',sec:['-3','3','0','-1'],d:0,a:'✓ Doğru! Sola gitmek eksilmek demektir. 0&#39;dan 3 birim sol = -3.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 0.5rem"><div style="height:4px;background:var(--border2);border-radius:2px"></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px"><span style="color:#E24B4A;font-weight:500">-3</span><span>-2</span><span>-1</span><span style="font-weight:500">0</span><span>1</span><span>2</span><span>3</span></div><div style="font-size:12px;color:var(--text2);text-align:center;margin-top:8px">← 3 birim sola = -3</div></div>';}},
-      {s:'Deniz seviyesi 0 metre kabul edilirse, 50 metre derinlikteki bir balık hangi değerdedir?',sec:['+50','-50','0','50 metre'],d:1,a:'✓ Doğru! Deniz seviyesinin altı negatif. -50 metre = 50 metre derinlik.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:0;margin:1rem 0"><div style="background:#E6F1FB;padding:8px 32px;border-radius:var(--radius) var(--radius) 0 0;font-size:13px;color:var(--blue-text)">Deniz yüzeyi = 0</div><div style="background:#85B7EB;padding:8px 32px;font-size:13px;color:#042C53">-10 m</div><div style="background:#378ADD;padding:8px 32px;font-size:13px;color:#E6F1FB">-30 m</div><div style="background:#185FA5;padding:8px 32px;border-radius:0 0 var(--radius) var(--radius);font-size:13px;font-weight:500;color:#E6F1FB">-50 m 🐟</div></div>';}},
-      {s:'-5 ile +5 sayılarından hangisi sıfıra daha yakındır?',sec:['-5','+5','İkisi de eşit uzaklıkta','Karşılaştırılamaz'],d:2,a:'✓ Doğru! -5 de +5 de sıfırdan 5 birim uzaktadır. Bu mesafeye "mutlak değer" denir.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 0.5rem"><div style="height:4px;background:var(--border2);border-radius:2px;position:relative"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:#888"></div></div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin-top:6px"><span style="color:#E24B4A">-5</span><span style="color:#888">0</span><span style="color:#0F6E56">+5</span></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:4px"><span>←5 birim→</span><span></span><span>←5 birim→</span></div></div>';}},
-      {s:'Bir oyunda puanın -10&#39;a düştü. Sonra 15 puan kazandın. Toplam puanın kaç?',sec:['-25','5','-5','25'],d:1,a:'✓ Doğru! -10 + 15 = 5. Negatiften başlayıp pozitife geçtik.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0"><span style="color:#E24B4A">-10</span><span style="color:var(--text2)">+</span><span style="color:#0F6E56">15</span><span style="color:var(--text2)">=</span><span style="color:#185FA5">5</span></div><div style="text-align:center;font-size:12px;color:var(--text2)">Negatiften başla, pozitife ulaş</div>';}}
-
-    ]
-  },
-  {
-    id:'d2', baslik:'Sayı basamakları', renk:'#EAF3DE', renk2:'#3B6D11',
-    rozet:{id:'r2', ad:'Basamak Ustası', acik:'Sayı basamakları dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart"><div class="icerik-bolum"><h3>Rakamların ağırlığı</h3><p>3752 yazdığında aslında dört farklı ağırlığı topluyorsun: 3000 + 700 + 50 + 2. Her rakamın yeri değişince değeri de değişir.</p></div>'+
-      '<div class="bs-grid">'+
-      '<div class="bs-kart" style="background:#E6F1FB" onclick="bsAc(\'Binler basamağı\',\'3 × 1000 = 3000. En ağır basamak.\')"><div style="font-size:11px;color:#185FA5;margin-bottom:4px">BİNLER</div><div style="font-size:24px;font-weight:500;color:#0C447C">3</div></div>'+
-      '<div class="bs-kart" style="background:#EAF3DE" onclick="bsAc(\'Yüzler basamağı\',\'7 × 100 = 700. İkinci en ağır.\')"><div style="font-size:11px;color:#3B6D11;margin-bottom:4px">YÜZLER</div><div style="font-size:24px;font-weight:500;color:#27500A">7</div></div>'+
-      '<div class="bs-kart" style="background:#FAEEDA" onclick="bsAc(\'Onlar basamağı\',\'5 × 10 = 50. Üçüncü basamak.\')"><div style="font-size:11px;color:#854F0B;margin-bottom:4px">ONLAR</div><div style="font-size:24px;font-weight:500;color:#633806">5</div></div>'+
-      '<div class="bs-kart" style="background:#FAECE7" onclick="bsAc(\'Birler basamağı\',\'2 × 1 = 2. En hafif basamak.\')"><div style="font-size:11px;color:#993C1D;margin-bottom:4px">BİRLER</div><div style="font-size:24px;font-weight:500;color:#712B13">2</div></div>'+
-      '</div>'+
-      '<div class="bilgi-kutu" id="bs-acik">Bir basamağa tıkla, değerini gör. 3752 = 3000 + 700 + 50 + 2</div>'+
-      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat örneği</h3><p>Bir TV 3752 TL. Binler: 3000 TL ana fiyat. Yüzler: 700 TL ekstra. Onlar: 50 TL. Birler: 2 TL. Her basamak para birimi gibi düşünülebilir.</p></div></div>';
-    },
-    kurulum: function(){},
-    sorular:[
-      {s:'4821 sayısında 8 rakamının değeri nedir?',sec:['8','80','800','8000'],d:2,a:'✓ Doğru! 4-8-2-1 dizisinde 8, yüzler basamağındadır. 8 × 100 = 800.'},
-      {s:'1350 sayısında binler basamağındaki rakam kaç TL değer taşır?',sec:['1 TL','10 TL','100 TL','1000 TL'],d:3,a:'✓ Doğru! 1350\'de 1 rakamı binler basamağında, değeri 1 × 1000 = 1000 TL.'},
-      {s:'Hangi sayıda onlar basamağında 6 vardır?',sec:['1462','2061','3601','4069'],d:3,a:'✓ Doğru! 4069: 4 binler, 0 yüzler, 6 onlar, 9 birler.'},
-      {s:'5000 + 400 + 30 + 7 = ?',sec:['5437','5473','4537','5743'],d:0,a:'✓ Doğru! 5000+400+30+7 = 5437. Her basamağı toplayarak sayıyı bulduk.'}
-    
-      ,{s:'5308 sayısında kaç tane yüz vardır?',sec:['5','3','0','8'],d:1,a:'✓ Doğru! 5308 → 5 binler, 3 yüzler, 0 onlar, 8 birler. Yüzler basamağında 3 var.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;gap:4px;justify-content:center;margin:1rem 0">'+[{r:'5',b:'BİNLER',c:'#185FA5',bg:'#E6F1FB'},{r:'3',b:'YÜZLER',c:'#0F6E56',bg:'#E1F5EE',sec:true},{r:'0',b:'ONLAR',c:'#854F0B',bg:'#FAEEDA'},{r:'8',b:'BİRLER',c:'#993C1D',bg:'#FAECE7'}].map(function(x){return'<div style="text-align:center;background:'+x.bg+';border-radius:var(--radius);padding:0.75rem 1rem;border:'+(x.sec?'2px solid '+x.c:'0.5px solid transparent')+'">'+'<div style="font-size:10px;color:'+x.c+';margin-bottom:4px">'+x.b+'</div>'+'<div style="font-size:24px;font-weight:500;color:'+x.c+'">'+x.r+'</div></div>';}).join('')+'</div>';}},
-      {s:'Hangi sayı "dört bin iki yüz doksan bir" olarak okunur?',sec:['4921','4291','4219','4129'],d:1,a:'✓ Doğru! 4000+200+90+1 = 4291.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;gap:4px;justify-content:center;margin:1rem 0">'+[{r:'4',b:'BİNLER',v:'4000'},{r:'2',b:'YÜZLER',v:'200'},{r:'9',b:'ONLAR',v:'90'},{r:'1',b:'BİRLER',v:'1'}].map(function(x,i){return'<div style="text-align:center;background:var(--bg2);border-radius:var(--radius);padding:0.75rem 0.5rem;min-width:56px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">'+x.b+'</div><div style="font-size:22px;font-weight:500">'+x.r+'</div><div style="font-size:10px;color:var(--text2);margin-top:4px">'+x.v+'</div></div>';}).join('')+'</div>';}},
-      {s:'9000 + 0 + 70 + 3 hangi sayıyı verir?',sec:['9730','9073','9703','9370'],d:1,a:'✓ Doğru! 9 binler, 0 yüzler, 7 onlar, 3 birler → 9073.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#185FA5">9000</span><span>+</span><span style="color:var(--text2)">0</span><span>+</span><span style="color:#854F0B">70</span><span>+</span><span style="color:#993C1D">3</span><span>=</span><span style="color:#0F6E56;font-size:20px">9073</span></div>';}},
-      {s:'Bir bisikletin fiyatı 2450 TL. Bu fiyattaki yüzler basamağı hangi rakam?',sec:['2','4','5','0'],d:1,a:'✓ Doğru! 2-4-5-0 dizisinde 4, yüzler basamağında. Değeri 400 TL.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;gap:4px;justify-content:center;margin:1rem 0">'+[{r:'2',b:'BİNLER',c:'#185FA5',bg:'#E6F1FB'},{r:'4',b:'YÜZLER',c:'#0F6E56',bg:'#E1F5EE',sec:true},{r:'5',b:'ONLAR',c:'#854F0B',bg:'#FAEEDA'},{r:'0',b:'BİRLER',c:'#993C1D',bg:'#FAECE7'}].map(function(x){return'<div style="text-align:center;background:'+x.bg+';border-radius:var(--radius);padding:0.75rem 1rem;border:'+(x.sec?'2px solid '+x.c:'0.5px solid transparent')+'">'+'<div style="font-size:10px;color:'+x.c+';margin-bottom:4px">'+x.b+'</div>'+'<div style="font-size:24px;font-weight:500;color:'+x.c+'">'+x.r+'</div></div>';}).join('')+'</div>';}},
-      {s:'2000 + 300 + 40 + 5 sayısında en büyük basamak değeri hangisidir?',sec:['5','40','300','2000'],d:3,a:'✓ Doğru! Her basamak değerinin en büyüğü binler basamağındaki 2000&#39;dir.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;flex-direction:column;gap:6px;margin:1rem 0">'+[{v:'2000',r:100,c:'#185FA5',bg:'#E6F1FB'},{v:'300',r:15,c:'#0F6E56',bg:'#E1F5EE'},{v:'40',r:2,c:'#854F0B',bg:'#FAEEDA'},{v:'5',r:0.5,c:'#993C1D',bg:'#FAECE7'}].map(function(x){return'<div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:500;width:44px;color:'+x.c+'">'+x.v+'</span><div style="flex:1;background:var(--bg2);border-radius:4px;height:16px;overflow:hidden"><div style="width:'+x.r+'%;height:100%;background:'+x.bg+';border-radius:4px"></div></div></div>';}).join('')+'</div>';}}
-
-    ]
-  },
-  {
-    id:'d3', baslik:'Tam sayılar ve sıfır', renk:'#EEEDFE', renk2:'#3C3489',
-    rozet:{id:'r3', ad:'Tam Sayı Uzmanı', acik:'Tam sayılar ve sıfır dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart"><div class="icerik-bolum"><h3>Tam sayılar nedir?</h3><p>Tam sayılar kesirli olmayan sayılardır: ...-3, -2, -1, 0, 1, 2, 3... Üç gruba ayrılır: pozitif, negatif ve sıfır.</p></div>'+
-      '<div class="gol-grid">'+
-      '<div class="gol-kart" style="background:var(--red-bg)"><div style="font-size:12px;color:var(--red);margin-bottom:6px;font-weight:500">Negatif</div><div style="font-size:13px;color:var(--red-text);line-height:1.8">...-3<br>-2<br>-1</div></div>'+
-      '<div class="gol-kart" style="background:var(--bg2);border:2px solid var(--border2)"><div style="font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500">Sıfır</div><div style="font-size:26px;font-weight:500;margin-top:6px">0</div></div>'+
-      '<div class="gol-kart" style="background:var(--green-bg)"><div style="font-size:12px;color:var(--green);margin-bottom:6px;font-weight:500">Pozitif</div><div style="font-size:13px;color:var(--green-text);line-height:1.8">1<br>2<br>3...</div></div>'+
-      '</div>'+
-      '<div class="bilgi-kutu">Sıfır ne pozitiftir ne negatif. Tam ortadadır. Banka hesabında 0 TL: ne borçlusun ne alacaklısın.</div>'+
-      '<div class="icerik-bolum" style="margin-top:1rem"><h3>Gerçek hayat: sıfır önemlidir</h3><p>Asansörde 0 zemin katıdır. Banka borcun 0\'a inmesi hedef. Sporda 0-0 beraberlik. Sıcaklıkta 0°C donma noktası. Sıfır, yokluk değil — tam ortada denge noktasıdır.</p></div></div>';
-    },
-    kurulum: function(){},
-    sorular:[
-      {s:'-7 hangi gruba girer?',sec:['Pozitif tam sayı','Sıfır','Negatif tam sayı','Kesirli sayı'],d:2,a:'✓ Doğru! -7 negatif tam sayıdır. Sıfırın solunda, 7 birim uzakta.'},
-      {s:'Asansörün "0" katı ne anlama gelir?',sec:['Asansör çalışmıyor','Zemin kat, giriş seviyesi','En üst kat','Bodrumun altı'],d:1,a:'✓ Doğru! 0 zemin katıdır. Pozitif katlar yukarı, negatif katlar aşağı gider.'},
-      {s:'Hangisi tam sayı değildir?',sec:['-5','0','3','2.5'],d:3,a:'✓ Doğru! 2.5 tam sayı değildir, kesirlidir. Tam sayılar: ...-2,-1,0,1,2...'},
-      {s:'Banka hesabında -250 TL var. Bu ne anlama gelir?',sec:['250 TL birikimi var','Ne birikimi ne borcu var','250 TL borcu var','Hesap kapalı'],d:2,a:'✓ Doğru! Negatif sayı bu durumda borcu temsil eder. -250 TL = 250 TL eksik, borçluyuz.'}
-    
-      ,{s:'Hangileri tam sayıdır? (doğru olanı seç)',sec:['1/2 ve 3','0 ve -7 ve 4','2,5 ve -1','0,1 ve 100'],d:1,a:'✓ Doğru! Tam sayılar kesirli olmaz. 0, -7 ve 4 hepsi tam sayıdır.',
-        interaktif:function(div){div.innerHTML='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:1rem 0">'+[{v:'0',ok:true},{v:'-7',ok:true},{v:'4',ok:true},{v:'2,5',ok:false},{v:'1/2',ok:false},{v:'-1',ok:true}].map(function(x){return'<div style="padding:8px;border-radius:var(--radius);text-align:center;font-size:16px;font-weight:500;background:'+(x.ok?'var(--green-bg)':'var(--red-bg)')+';color:'+(x.ok?'var(--green-text)':'var(--red-text)')+'">'+x.v+' '+(x.ok?'✓':'✗')+'</div>';}).join('')+'</div>';}},
-      {s:'Termometre -3&#39;ten 4&#39;e çıktı. Kaç derece arttı?',sec:['1','7','-7','3'],d:1,a:'✓ Doğru! -3&#39;ten 4&#39;e: önce 0&#39;a 3 adım, sonra 4&#39;e 4 adım. Toplam 7 derece artış.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 0.5rem"><div style="height:4px;background:var(--border2);border-radius:2px"></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px"><span style="color:#E24B4A;font-weight:500">-3</span><span>-2</span><span>-1</span><span>0</span><span>1</span><span>2</span><span>3</span><span style="color:#0F6E56;font-weight:500">4</span></div><div style="text-align:center;font-size:13px;color:#185FA5;margin-top:8px;font-weight:500">← 7 adım →</div></div>';}},
-      {s:'Sıfır tam sayı mıdır?',sec:['Hayır, tam sayı değil','Evet, tam sayıdır','Hem pozitif hem negatif','Belirsiz'],d:1,a:'✓ Doğru! Sıfır tam sayıdır. Ne pozitif ne negatif, ama kesinlikle tam sayı.',
-        interaktif:function(div){div.innerHTML='<div style="text-align:center;margin:1rem 0"><div style="font-size:48px;font-weight:500;color:#888;margin-bottom:8px">0</div><div style="display:flex;justify-content:center;gap:12px"><span style="background:var(--green-bg);color:var(--green-text);padding:4px 12px;border-radius:var(--radius);font-size:12px">Tam sayı ✓</span><span style="background:var(--red-bg);color:var(--red-text);padding:4px 12px;border-radius:var(--radius);font-size:12px">Negatif değil</span><span style="background:var(--red-bg);color:var(--red-text);padding:4px 12px;border-radius:var(--radius);font-size:12px">Pozitif değil</span></div></div>';}},
-      {s:'Aşağıdaki sayıları küçükten büyüğe sırala: -5, 3, 0, -1, 7',sec:['-5, -1, 0, 3, 7','0, -1, -5, 3, 7','7, 3, 0, -1, -5','-5, 0, -1, 3, 7'],d:0,a:'✓ Doğru! Sayı doğrusunda soldan sağa: -5, -1, 0, 3, 7.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 0.5rem"><div style="height:4px;background:var(--border2);border-radius:2px"></div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin-top:6px"><span style="color:#E24B4A">-5</span><span style="color:#F09595">-1</span><span style="color:#888">0</span><span style="color:#97C459">3</span><span style="color:#0F6E56">7</span></div></div>';}},
-      {s:'Bir mağazanın kâr-zarar tablosunda -500 TL yazıyor. Bu ne anlama gelir?',sec:['500 TL kâr etti','Başabaş','500 TL zarar etti','Bilinmiyor'],d:2,a:'✓ Doğru! Negatif değer zarardır. -500 TL = 500 TL eksi, yani zarar.',
-        interaktif:function(div){div.innerHTML='<div style="background:var(--red-bg);border-radius:var(--radius-lg);padding:1.25rem;margin:1rem 0;text-align:center"><div style="font-size:11px;color:var(--red-text);margin-bottom:6px">AYLIK KÂR/ZARAR</div><div style="font-size:32px;font-weight:500;color:var(--red-text)">-500 TL</div><div style="font-size:12px;color:var(--red-text);margin-top:6px">Zarar: 500 TL eksikte</div></div>';}}
-
-    ]
-  },
-  {
-    id:'d4', baslik:'Kesirler', renk:'#FAECE7', renk2:'#993C1D',
-    rozet:{id:'r4', ad:'Kesir Ustası', acik:'Kesirler dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart"><div class="icerik-bolum"><h3>Kesir nedir?</h3><p>Bir bütünü eşit parçalara böldüğümüzde her parçaya <strong>kesir</strong> diyoruz. Pizzayı 4 eşit parçaya böldün, 1 parça aldın: bu 1/4 yani "dörtte bir"dir.</p></div>'+
-      '<div style="display:flex;gap:16px;align-items:flex-start;margin:1rem 0;flex-wrap:wrap">'+
-      '<div style="flex:1;min-width:180px"><div style="text-align:center;margin-bottom:8px;font-size:13px;color:var(--text2)">Pizza modeli</div>'+
-      '<div id="pizza-wrap" style="position:relative;width:140px;height:140px;margin:0 auto;cursor:pointer" onclick="pizzaDilimle()">'+
-      '<svg viewBox="0 0 140 140" width="140" height="140" id="pizza-svg"></svg></div>'+
-      '<div style="text-align:center;margin-top:8px;font-size:13px" id="pizza-label">Tıkla, dilimle!</div></div>'+
-      '<div style="flex:1;min-width:160px"><div class="bilgi-kutu" id="kesir-acik" style="margin:0">Pizza bölünmemiş = 1 bütün. Tıklayarak dilimle ve kesri gör.</div></div></div>'+
-      '<div class="icerik-bolum"><h3>Pay ve payda</h3><p><strong>Payda</strong> (alttaki): bütün kaç parçaya bölündü. <strong>Pay</strong> (üstteki): kaç parça alındı. 3/8 → bütün 8 parça, sen 3\'ünü aldın.</p></div>'+
-      '<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin:1rem 0;flex-wrap:wrap">'+
-      '<div style="text-align:center;background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem 2rem">'+
-      '<div style="font-size:32px;font-weight:500;color:#993C1D;border-bottom:3px solid #993C1D;padding-bottom:4px;min-width:40px">3</div>'+
-      '<div style="font-size:32px;font-weight:500;color:#185FA5;padding-top:4px">8</div>'+
-      '<div style="font-size:11px;color:var(--text2);margin-top:8px">Üç bölü sekiz</div></div>'+
-      '<div style="font-size:13px;color:var(--text2);line-height:2">'+
-      '<div style="color:#993C1D;font-weight:500">3 → Pay: alınan parça</div>'+
-      '<div style="color:#185FA5;font-weight:500">8 → Payda: toplam parça</div></div></div>'+
-      '<div class="icerik-bolum"><h3>Gerçek hayat örnekleri</h3><p>Günlük hayatta kesirler her yerde: 1/2 ekmek, 3/4 saat (45 dakika), 2/3 bardak su, yarım kg et. "Yarım" aslında 1/2 kesirimizdir.</p></div></div>';
-    },
-    kurulum: function(){
-      var dilim=1, toplam=1;
-      function ciz(){
-        var svg=document.getElementById('pizza-svg');
-        if(!svg)return;
-        svg.innerHTML='';
-        var cx=70,cy=70,r=60;
-        var renkler=['#E24B4A','#F09595','#FAEEDA','#EAF3DE','#B5D4F4','#CECBF6','#F5C4B3','#C0DD97'];
-        if(toplam===1){
-          var daire=document.createElementNS('http://www.w3.org/2000/svg','circle');
-          daire.setAttribute('cx',cx);daire.setAttribute('cy',cy);daire.setAttribute('r',r);
-          daire.setAttribute('fill','#E24B4A');daire.setAttribute('stroke','#fff');daire.setAttribute('stroke-width','2');
-          svg.appendChild(daire);
-        } else {
-          for(var i=0;i<toplam;i++){
-            var bas=(i/toplam)*2*Math.PI-Math.PI/2;
-            var bit=((i+1)/toplam)*2*Math.PI-Math.PI/2;
-            var x1=cx+r*Math.cos(bas),y1=cy+r*Math.sin(bas);
-            var x2=cx+r*Math.cos(bit),y2=cy+r*Math.sin(bit);
-            var buyuk=bit-bas>Math.PI?1:0;
-            var path=document.createElementNS('http://www.w3.org/2000/svg','path');
-            path.setAttribute('d','M'+cx+' '+cy+' L'+x1+' '+y1+' A'+r+' '+r+' 0 '+buyuk+' 1 '+x2+' '+y2+' Z');
-            path.setAttribute('fill',i<dilim?renkler[i%renkler.length]:'var(--bg2)');
-            path.setAttribute('stroke','#fff');path.setAttribute('stroke-width','2');
-            svg.appendChild(path);
-          }
-        }
-        document.getElementById('pizza-label').textContent=toplam===1?'1 bütün':dilim+' / '+toplam;
-        var aciklar={1:'1 bütün pizza. Henüz kesilmedi.',2:'Yarıya böldük. Her parça 1/2. Sen '+dilim+'/2 aldın.',3:'Üçe böldük. Her parça 1/3. Sen '+dilim+'/3 aldın.',4:'Dörde böldük. Her parça 1/4. Sen '+dilim+'/4 aldın.',6:'Altıya böldük. Her parça 1/6. Sen '+dilim+'/6 aldın.',8:'Sekize böldük. Her parça 1/8. Sen '+dilim+'/8 aldın.'};
-        var el=document.getElementById('kesir-acik');
-        if(el)el.textContent=aciklar[toplam]||dilim+'/'+toplam+' dilim aldın.';
-      }
-      window.pizzaDilimle=function(){
-        var sira=[1,2,3,4,6,8];
-        var idx=sira.indexOf(toplam);
-        toplam=sira[(idx+1)%sira.length];
-        dilim=Math.min(dilim,toplam);
-        if(toplam>1&&dilim===toplam)dilim=1;
-        ciz();
-      };
-      ciz();
-    },
-    sorular:[
-      {s:'Bir pastayı 8 eşit parçaya böldük, 3 parça yedik. Bu hangi kesirdir?',sec:['8/3','3/8','1/3','5/8'],d:1,a:'✓ Doğru! 3/8: pay=yenen parça (3), payda=toplam parça (8).'},
-      {s:'1/2 kesrinde payda kaçtır?',sec:['1','2','3','Payda yok'],d:1,a:'✓ Doğru! Payda alttaki sayıdır: 2. Yani bütün 2 eşit parçaya bölünmüş.'},
-      {s:'"Çeyrek saat" kaç dakikadır? (1 saat = 60 dakika, çeyrek = 1/4)',sec:['10 dakika','15 dakika','20 dakika','30 dakika'],d:1,a:'✓ Doğru! 1/4 × 60 = 15 dakika. Çeyrek = dörtte bir demek.'},
-      {s:'3/3 kesri neye eşittir?',sec:['1/3','0','1 bütün','3'],d:2,a:'✓ Doğru! Pay ve payda eşit olunca kesir 1 bütüne eşit olur.'},
-      {s:'Hangi kesir en büyüktür?',sec:['1/2','1/4','1/8','1/3'],d:0,a:'✓ Doğru! Payda büyüdükçe parçalar küçülür. 1/2 en büyük parça, 1/8 en küçüğü.'}
-    
-      ,{s:'2/6 kesrini sadeleştirelim. Sonuç nedir?',sec:['1/3','2/3','1/6','3/6'],d:0,a:'✓ Doğru! Pay ve payda ikiye bölünür: 2÷2=1, 6÷2=3. Sonuç: 1/3.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:1rem 0"><div style="text-align:center"><div style="font-size:28px;font-weight:500;color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:4px">2</div><div style="font-size:28px;font-weight:500;color:#185FA5;padding-top:4px">6</div></div><span style="font-size:20px;color:var(--text2)">÷2 → </span><div style="text-align:center"><div style="font-size:28px;font-weight:500;color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:4px">1</div><div style="font-size:28px;font-weight:500;color:#185FA5;padding-top:4px">3</div></div></div>';}},
-      {s:'Hangi kesir yarımdan büyüktür?',sec:['1/4','2/5','3/5','1/3'],d:2,a:'✓ Doğru! 3/5 = 0,6 ve yarım = 0,5. 0,6 > 0,5 olduğu için 3/5 yarımdan büyük.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;gap:8px;justify-content:center;margin:1rem 0">'+[{k:'1/4',v:25},{k:'2/5',v:40},{k:'3/5',v:60,sec:true},{k:'1/3',v:33}].map(function(x){return'<div style="text-align:center"><div style="width:50px;background:var(--bg2);border-radius:4px;overflow:hidden;height:80px;position:relative;margin:0 auto"><div style="position:absolute;bottom:0;width:100%;background:'+(x.sec?'#0F6E56':'#185FA5')+';height:'+x.v+'%"></div></div><div style="font-size:12px;font-weight:500;margin-top:4px;color:'+(x.sec?'#0F6E56':'var(--text)')+'">'+x.k+'</div></div>';}).join('')+'</div><div style="text-align:center;font-size:11px;color:var(--text2)">Yarım (1/2) = %50 seviyesi</div>';}},
-      {s:'Bir kekin 3/8&#39;i yenildi. Ne kadarı kaldı?',sec:['3/8','5/8','1/8','4/8'],d:1,a:'✓ Doğru! Tamamı 8/8. Yenilen 3/8. Kalan: 8/8 - 3/8 = 5/8.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;gap:12px;align-items:center;justify-content:center;margin:1rem 0"><svg viewBox="0 0 120 120" width="120" height="120">'+function(){var s='';for(var i=0;i<8;i++){var b=(i/8)*2*Math.PI-Math.PI/2,e=((i+1)/8)*2*Math.PI-Math.PI/2;var x1=60+55*Math.cos(b),y1=60+55*Math.sin(b),x2=60+55*Math.cos(e),y2=60+55*Math.sin(e);s+='<path d="M60 60 L'+x1+' '+y1+' A55 55 0 0 1 '+x2+' '+y2+' Z" fill="'+(i<3?'#F1EFE8':'#E24B4A')+'" stroke="white" stroke-width="2"/>';}return s;}()+'</svg><div style="font-size:13px"><div style="color:#E24B4A;margin-bottom:4px">■ 3/8 yendi</div><div style="color:#0F6E56">■ 5/8 kaldı</div></div></div>';}},
-      {s:'4/4 kesri neye eşittir?',sec:['4','1/4','0','1 bütün'],d:3,a:'✓ Doğru! Pay paydaya eşit olunca kesir 1 bütüne eşit olur. 4/4 = 1.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:1rem 0"><div style="text-align:center"><div style="font-size:28px;font-weight:500;color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:4px">4</div><div style="font-size:28px;font-weight:500;color:#185FA5;padding-top:4px">4</div></div><span style="font-size:24px">= 1 bütün</span></div><div style="text-align:center;font-size:12px;color:var(--text2)">Tüm parçalar alındı = tam bütün</div>';}},
-      {s:'Bir sınıfın 2/3&#39;ü kız öğrenci. 30 kişilik sınıfta kaç kız var?',sec:['10','15','20','25'],d:2,a:'✓ Doğru! 30 × 2 ÷ 3 = 20 kız öğrenci.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:1rem 0">';for(var i=0;i<30;i++)html+='<div style="aspect-ratio:1;border-radius:3px;background:'+(i<20?'#185FA5':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;margin-top:6px"><span style="color:#185FA5">■ 20 kız (2/3)</span>  <span style="color:var(--text2)">■ 10 erkek (1/3)</span></div>';}}
-
-    ]
-  },
-  {
-    id:'d5', baslik:'Ondalıklı sayılar', renk:'#E1F5EE', renk2:'#0F6E56',
-    rozet:{id:'r5', ad:'Ondalık Ustası', acik:'Ondalıklı sayılar dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart">'+
-        '<div class="icerik-bolum"><h3>Ondalıklı sayı nedir?</h3><p>Tam sayılar arasındaki değerleri göstermek için ondalıklı sayılar kullanılır. Virgülün solunda tam kısım, sağında küçük parçalar yer alır.</p></div>'+
-        '<div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem;margin:1rem 0">'+
-          '<div style="text-align:center;margin-bottom:12px;font-size:13px;color:var(--text2)">Sayıyı parçala — rakamlara tıkla</div>'+
-          '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:40px;font-weight:500;margin-bottom:12px">'+
-            '<span id="od-tam" style="color:#0F6E56;cursor:pointer;border-radius:6px;padding:2px 6px;transition:background .15s" onclick="odAc(0)">3</span>'+
-            '<span style="color:var(--text2);font-size:28px">,</span>'+
-            '<span id="od-onda" style="color:#185FA5;cursor:pointer;border-radius:6px;padding:2px 6px;transition:background .15s" onclick="odAc(1)">7</span>'+
-            '<span id="od-yuzde" style="color:#993C1D;cursor:pointer;border-radius:6px;padding:2px 6px;transition:background .15s" onclick="odAc(2)">5</span>'+
-          '</div>'+
-          '<div id="od-acik" class="bilgi-kutu" style="margin:0">Bir rakama tıkla, ne anlama geldiğini gör.</div>'+
-        '</div>'+
-        '<div class="icerik-bolum"><h3>Market fişi — gerçek hayat</h3><p>Fiyatlar her zaman ondalıklı: 12,50 TL → 12 tam lira, 50 kuruş. 1 TL = 100 kuruş.</p></div>'+
-        '<div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1rem;margin:1rem 0">'+
-          '<div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:500">ALIŞVERİŞ FİŞİ — ürünlere tıkla, seç</div>'+
-          '<div id="fis-urunler"></div>'+
-          '<div style="border-top:0.5px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-size:14px;font-weight:500">'+
-            '<span>Toplam</span><span id="fis-toplam" style="color:#0F6E56">0,00 TL</span>'+
+    };
+    var fiyat=[{r:'2',b:'Binler',v:2000,c:'#185FA5'},{r:'4',b:'Yüzler',v:400,c:'#0F6E56'},{r:'6',b:'Onlar',v:60,c:'#854F0B'},{r:'8',b:'Birler',v:8,c:'#993C1D'}];
+    var html='';
+    fiyat.forEach(function(f){
+      var pct=Math.round(f.v/2468*100);
+      html+='<div style="display:flex;align-items:center;gap:8px">'+
+        '<span style="font-size:13px;font-weight:500;width:28px;text-align:center;color:'+f.c+'">'+f.r+'</span>'+
+        '<span style="font-size:11px;color:var(--text2);width:52px">'+f.b+'</span>'+
+        '<div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden">'+
+          '<div style="width:'+pct+'%;height:100%;background:'+f.c+';border-radius:4px;display:flex;align-items:center;padding-left:6px">'+
+            '<span style="font-size:11px;color:white;white-space:nowrap">'+f.v+' TL</span>'+
           '</div>'+
         '</div>'+
-        '<div class="icerik-bolum"><h3>Sayı doğrusunda ondalık</h3><p>2,5 sayısı tam olarak 2 ile 3&#39;ün ortasındadır.</p></div>'+
-        '<input type="range" id="od-slider" min="0" max="500" value="0" style="width:100%;margin:0.5rem 0" oninput="odSlider(this.value)">'+
-        '<div id="od-slider-label" style="text-align:center;font-size:18px;font-weight:500;color:#0F6E56">0,00</div>'+
       '</div>';
-    },
-    kurulum: function(){
-      var odAciklar = [
-        '3 → Tam kısım. Virgülün solundaki sayı. Değeri tam olarak 3.',
-        '7 → Onda birler basamağı. Virgülün hemen sağı. Değeri 7 ÷ 10 = 0,7.',
-        '5 → Yüzde birler basamağı. İkinci ondalık. Değeri 5 ÷ 100 = 0,05.'
-      ];
-      window.odAc = function(i){
-        ['od-tam','od-onda','od-yuzde'].forEach(function(id,j){
-          document.getElementById(id).style.background = j===i ? ['#E1F5EE','#E6F1FB','#FAECE7'][j] : '';
-        });
-        document.getElementById('od-acik').textContent = odAciklar[i];
-      };
-      var urunler = [{ad:'Ekmek',fiyat:8.50},{ad:'Süt (1L)',fiyat:24.75},{ad:'Domates (1kg)',fiyat:15.25},{ad:'Yoğurt',fiyat:32.00}];
-      var secili = [];
-      function fisGuncelle(){
-        var html = urunler.map(function(u,i){
-          var sec = secili.indexOf(i)>=0;
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="fisTikla('+i+')">'+
-            '<div style="display:flex;align-items:center;gap:8px">'+
-              '<div style="width:16px;height:16px;border-radius:4px;border:0.5px solid var(--border2);background:'+(sec?'#0F6E56':'')+'"></div>'+
-              '<span style="font-size:13px">'+u.ad+'</span></div>'+
-            '<span style="font-size:13px;font-weight:500;color:'+(sec?'#0F6E56':'var(--text2)')+'">'+u.fiyat.toFixed(2)+' TL</span></div>';
-        }).join('');
-        document.getElementById('fis-urunler').innerHTML = html;
-        var top = secili.reduce(function(t,i){ return t+urunler[i].fiyat; },0);
-        document.getElementById('fis-toplam').textContent = top.toFixed(2)+' TL';
+    });
+    document.getElementById('fiyat-cubuklar').innerHTML=html;
+  },
+  sorular:[
+    {
+      s:'3752 sayısında 7 rakamının gerçek değeri nedir?',
+      sec:['7','70','700','7000'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! 7, yüzler basamağında olduğu için değeri 700\'dür.',
+        adimlar:[
+          '3752 sayısını basamaklara ayıralım: 3-7-5-2',
+          '3 → binler basamağı → 3×1000 = 3000',
+          '7 → yüzler basamağı → 7×100 = 700',
+          '5 → onlar basamağı → 5×10 = 50',
+          '2 → birler basamağı → 2×1 = 2',
+          'Sonuç: 7\'nin değeri 700\'dür.'
+        ]
       }
-      window.fisTikla = function(i){
-        var idx=secili.indexOf(i);
-        if(idx>=0) secili.splice(idx,1); else secili.push(i);
-        fisGuncelle();
-      };
+    },
+    {
+      s:'4821 sayısında hangi rakam onlar basamağındadır?',
+      sec:['4','8','2','1'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! 4821\'de onlar basamağındaki rakam 2\'dir.',
+        adimlar:[
+          '4821 → sağdan sola basamakları sayalım:',
+          '1 → birler (1. basamak)',
+          '2 → onlar (2. basamak) ← aradığımız bu',
+          '8 → yüzler (3. basamak)',
+          '4 → binler (4. basamak)',
+          'Onlar basamağındaki rakam: 2'
+        ]
+      }
+    },
+    {
+      s:'5000 + 300 + 60 + 4 sayısı kaçtır?',
+      sec:['5364','5346','5634','5643'],
+      d:0,
+      cozum:{
+        sonuc:'Doğru! Her basamağı yerine koyarsak 5364 elde ederiz.',
+        adimlar:[
+          '5000 → binler basamağına 5 yazılır',
+          '300 → yüzler basamağına 3 yazılır',
+          '60 → onlar basamağına 6 yazılır',
+          '4 → birler basamağına 4 yazılır',
+          'Birleştir: 5-3-6-4 → 5364'
+        ]
+      }
+    },
+    {
+      s:'"İki bin üç yüz kırk beş" sayısı hangisidir?',
+      sec:['2435','2345','3245','2453'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! İki bin üç yüz kırk beş = 2345.',
+        adimlar:[
+          'İki bin → binler basamağına 2',
+          'Üç yüz → yüzler basamağına 3',
+          'Kırk → onlar basamağına 4',
+          'Beş → birler basamağına 5',
+          'Birleştir: 2-3-4-5 → 2345'
+        ]
+      }
+    },
+    {
+      s:'1350 sayısında yüzler basamağı hangi rakam ve değeri nedir?',
+      sec:['1, değeri 1000','3, değeri 300','5, değeri 50','0, değeri 0'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! 1350\'de yüzler basamağındaki rakam 3, değeri 300\'dür.',
+        adimlar:[
+          '1350 → 1-3-5-0',
+          '0 → birler basamağı',
+          '5 → onlar basamağı',
+          '3 → yüzler basamağı → 3×100 = 300',
+          '1 → binler basamağı',
+          'Yüzler basamağı: 3, değeri: 300'
+        ]
+      }
+    },
+    {
+      s:'Hangi sayının binler basamağında 6 rakamı vardır?',
+      sec:['1635','3601','6389','3069'],
+      d:2,
+      cozum:{
+        sonuc:'Doğru! 6389 sayısında binler basamağında 6 vardır.',
+        adimlar:[
+          'Binler basamağı bir sayının en soldaki (4. basamak) rakkamıdır:',
+          '1635 → binler: 1 (değil)',
+          '3601 → binler: 3 (değil)',
+          '6389 → binler: 6 ✓ → 6×1000 = 6000',
+          '3069 → binler: 3 (değil)'
+        ]
+      }
+    },
+    {
+      s:'9070 sayısında yüzler basamağındaki rakam kaçtır?',
+      sec:['9','0','7','Yüzler basamağı yok'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! 9070\'de yüzler basamağındaki rakam 0\'dır.',
+        adimlar:[
+          '9070 → 9-0-7-0',
+          '0 → birler basamağı',
+          '7 → onlar basamağı',
+          '0 → yüzler basamağı ← aradığımız bu',
+          '9 → binler basamağı',
+          'Yüzler basamağında 0 var. 0×100 = 0'
+        ]
+      }
+    },
+    {
+      s:'2000 + 400 + 30 + 5 sayısında en büyük basamak değeri hangisidir?',
+      sec:['5','30','400','2000'],
+      d:3,
+      cozum:{
+        sonuc:'Doğru! Binler basamağı en büyük değeri taşır: 2000.',
+        adimlar:[
+          'Her basamağın değerine bakalım:',
+          'Birler: 5',
+          'Onlar: 30',
+          'Yüzler: 400',
+          'Binler: 2000 ← en büyük',
+          'Basamak değerleri soldan sağa küçülür. Binler her zaman en büyük.'
+        ]
+      }
+    },
+    {
+      s:'Bir bisikletin fiyatı 3640 TL. Yüzler basamağı kaç TL değer taşır?',
+      sec:['3000 TL','600 TL','40 TL','0 TL'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! 3640\'ta yüzler basamağındaki 6, 600 TL değer taşır.',
+        adimlar:[
+          '3640 → 3-6-4-0',
+          '0 → birler → 0 TL',
+          '4 → onlar → 40 TL',
+          '6 → yüzler → 6×100 = 600 TL',
+          '3 → binler → 3000 TL',
+          'Yüzler basamağının değeri: 600 TL'
+        ]
+      }
+    },
+    {
+      s:'7305 sayısını oluşturan basamak değerlerini topladığımızda ne elde ederiz?',
+      sec:['7000+300+50+5','7000+300+0+5','7000+30+0+5','700+300+0+5'],
+      d:1,
+      cozum:{
+        sonuc:'Doğru! 7305 = 7000 + 300 + 0 + 5.',
+        adimlar:[
+          '7305 → 7-3-0-5',
+          '5 → birler → 5×1 = 5',
+          '0 → onlar → 0×10 = 0 (sıfır onluk yok)',
+          '3 → yüzler → 3×100 = 300',
+          '7 → binler → 7×1000 = 7000',
+          'Toplam: 7000 + 300 + 0 + 5 = 7305 ✓'
+        ]
+      }
+    }
+  ]
+},
+{
+  id:'d3',baslik:'Tam sayılar ve sıfır',renk:'#EEEDFE',renk2:'#3C3489',
+  rozet:{id:'r3',ad:'Tam Sayı Uzmanı',acik:'Tam sayılar ve sıfır dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Tam sayı nedir?</h3>'+
+      '<p>Tam sayılar, virgülsüz ve kesirli olmayan sayılardır: ..., -3, -2, -1, 0, 1, 2, 3, ...</p>'+
+      '<p>2,5 veya 1/3 gibi sayılar tam sayı DEĞİLDİR — kesirlidirler.</p>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:1rem 0">'+
+        '<div style="background:var(--red-bg);border-radius:var(--r);padding:1rem;text-align:center">'+
+          '<div style="font-size:11px;font-weight:500;color:var(--red-text);margin-bottom:8px">NEGATİF TAM SAYILAR</div>'+
+          '<div style="font-size:13px;color:var(--red-text);line-height:2">...-4<br>-3<br>-2<br>-1</div>'+
+        '</div>'+
+        '<div style="background:var(--bg2);border-radius:var(--r);padding:1rem;text-align:center;border:1.5px solid var(--border2)">'+
+          '<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:8px">SIFIR</div>'+
+          '<div style="font-size:36px;font-weight:500">0</div>'+
+          '<div style="font-size:11px;color:var(--text2);margin-top:8px">Ne + ne -</div>'+
+        '</div>'+
+        '<div style="background:var(--green-bg);border-radius:var(--r);padding:1rem;text-align:center">'+
+          '<div style="font-size:11px;font-weight:500;color:var(--green-text);margin-bottom:8px">POZİTİF TAM SAYILAR</div>'+
+          '<div style="font-size:13px;color:var(--green-text);line-height:2">1<br>2<br>3<br>4...</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Sıfırın önemi</h3>'+
+      '<p>Sıfır çok özel bir sayıdır. Ne pozitif ne negatif — tam ortada durur. Günlük hayatta sıfır "yokluk" değil, "denge noktası" anlamına gelir:</p>'+
+      '<div class="ornek-kutu">🌡️ 0°C → Suyun donma noktası (çok kritik bir değer!)</div>'+
+      '<div class="ornek-kutu">🏦 0 TL → Ne param var ne borcum, başabaş</div>'+
+      '<div class="ornek-kutu">🏢 0. kat → Zemin kat, giriş seviyesi</div>'+
+      '<div class="ornek-kutu">⚽ 0-0 → Beraberlik, iki takım da gol atmamış</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Sayı doğrusunda tam sayılar</h3>'+
+      '<p>Tam sayılar sayı doğrusunda eşit aralıklarla dizilir. Her tam sayı bir noktaya karşılık gelir:</p>'+
+      '<div style="position:relative;margin:1.5rem 0">'+
+        '<div style="height:4px;background:var(--border2);border-radius:2px"></div>'+
+        '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin-top:8px">'+
+          '<span style="color:var(--red-text)">-4</span><span style="color:var(--red-text)">-3</span><span style="color:var(--red-text)">-2</span><span style="color:var(--red-text)">-1</span>'+
+          '<span style="color:var(--text2);font-weight:700">0</span>'+
+          '<span style="color:var(--green-text)">1</span><span style="color:var(--green-text)">2</span><span style="color:var(--green-text)">3</span><span style="color:var(--green-text)">4</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="adim-kutu">Kural: Sayı doğrusunda sola gidince küçülür, sağa gidince büyür.</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Gerçek hayat: kâr ve zarar</h3>'+
+      '<p>İşletmelerde pozitif ve negatif sayılar kâr-zarar hesabında kullanılır:</p>'+
+      '<div id="kar-zarar-grafik" style="margin:1rem 0"></div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var aylar=[{ay:'Oca',deger:1200},{ay:'Şub',deger:-400},{ay:'Mar',deger:800},{ay:'Nis',deger:-200},{ay:'May',deger:1500}];
+    var max=1500;
+    var html='<div style="display:flex;align-items:flex-end;gap:8px;height:100px">';
+    aylar.forEach(function(a){
+      var yukseklik=Math.abs(a.deger)/max*80;
+      var renk=a.deger>0?'var(--green)':'var(--red)';
+      html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">'+
+        '<div style="font-size:11px;font-weight:500;color:'+renk+'">'+a.deger+'</div>'+
+        '<div style="width:100%;height:'+yukseklik+'px;background:'+renk+';border-radius:3px 3px 0 0"></div>'+
+        '<div style="font-size:11px;color:var(--text2)">'+a.ay+'</div>'+
+      '</div>';
+    });
+    html+='</div><div style="font-size:12px;color:var(--text2);margin-top:6px;text-align:center">Yeşil = kâr (+), Kırmızı = zarar (-)</div>';
+    document.getElementById('kar-zarar-grafik').innerHTML=html;
+  },
+  sorular:[
+    {s:'Hangisi tam sayıdır?',sec:['2,5','-3','1/4','0,7'],d:1,cozum:{sonuc:'Doğru! -3 tam sayıdır.',adimlar:['-3 virgülsüz ve kesirsizdır → tam sayı ✓','2,5 → virgüllü → tam sayı değil ✗','1/4 → kesirli → tam sayı değil ✗','0,7 → ondalıklı → tam sayı değil ✗']}},
+    {s:'Sıfır hangi gruba girer?',sec:['Pozitif tam sayı','Negatif tam sayı','Ne pozitif ne negatif, ama tam sayıdır','Kesirli sayı'],d:2,cozum:{sonuc:'Doğru! Sıfır ne pozitif ne negatiftir.',adimlar:['Pozitif sayılar 0\'dan büyük: 1, 2, 3...','Negatif sayılar 0\'dan küçük: -1, -2, -3...','Sıfır bunların hiçbiri değil — tam ortada.','Ama tam sayılar içindedir: ...-2, -1, 0, 1, 2...']}},
+    {s:'Asansörde "-3" yazıyor. Bu hangi kattır?',sec:['3. kat','Zemin katın 3 kat üstü','Zemin katın 3 kat altı','Bilinmiyor'],d:2,cozum:{sonuc:'Doğru! -3, zemin katın 3 kat altındadır.',adimlar:['Asansörde 0 = zemin kat (giriş)','+ değerler yukarı katları gösterir','- değerler bodrum katlarını gösterir','-3 → 3 kat aşağı → zemin altı 3. kat']}},
+    {s:'-8, 3, 0, -2, 5 sayılarını küçükten büyüğe sırala.',sec:['-8,-2,0,3,5','0,-2,-8,3,5','5,3,0,-2,-8','-2,-8,0,3,5'],d:0,cozum:{sonuc:'Doğru! Sayı doğrusunda soldan sağa: -8, -2, 0, 3, 5.',adimlar:['Sayı doğrusunda sol = küçük, sağ = büyük.','En küçük: -8 (en solda)','Sonra: -2','-Sonra: 0 (orta nokta)','Sonra: 3','En büyük: 5 (en sağda)']}},
+    {s:'Bir şirketin Ocak ayı kârı -5000 TL. Bu ne demek?',sec:['5000 TL kâr etti','Başabaş kapattı','5000 TL zarar etti','Hesap yapılamadı'],d:2,cozum:{sonuc:'Doğru! Negatif değer zarardır.',adimlar:['Kâr = kazanılan para → pozitif değer','Zarar = kaybedilen para → negatif değer','0 TL → ne kâr ne zarar, başabaş','-5000 TL → 5000 TL ekside → zarar']}},
+    {s:'Hangisi doğrudur?',sec:['Her tam sayı pozitiftir','-15 tam sayı değildir','Kesirli sayılar da tam sayıdır','-15 tam sayıdır'],d:3,cozum:{sonuc:'Doğru! -15 negatif bir tam sayıdır.',adimlar:['Tam sayılar: ..., -3, -2, -1, 0, 1, 2, 3...','Negatif sayılar da bu listenin içindedir.','-15 → kesirli değil, virgülsüz → tam sayı ✓','Tam sayı = pozitif olmak zorunda değil!']}},
+    {s:'Termometre -7\'den 4\'e çıktı. Kaç derece arttı?',sec:['3','7','11','-3'],d:2,cozum:{sonuc:'Doğru! -7\'den 4\'e kadar 11 derece fark var.',adimlar:['-7\'den 0\'a gitmek: 7 adım','0\'dan 4\'e gitmek: 4 adım','Toplam: 7 + 4 = 11 adım','Formül: 4 - (-7) = 4 + 7 = 11°C artış']}},
+    {s:'Sayı doğrusunda 0\'a en yakın sayı hangisidir?',sec:['-5','3','-1','7'],d:2,cozum:{sonuc:'Doğru! -1, sıfıra en yakın sayıdır.',adimlar:['Her sayının sıfıra uzaklığını bulalım:','-5 → 5 birim uzakta','3 → 3 birim uzakta','-1 → 1 birim uzakta ← en yakın','7 → 7 birim uzakta']}},
+    {s:'Hangi ifade yanlıştır?',sec:['0 bir tam sayıdır','Negatif sayılar tam sayı olabilir','Her pozitif sayı tam sayıdır','Tam sayılar arasında kesirli sayılar da vardır'],d:3,cozum:{sonuc:'Doğru! Tam sayılar arasında kesirli sayılar bulunmaz.',adimlar:['Tam sayı tanımı: virgülsüz, kesirli olmayan sayılar.','Kesirli sayılar (1/2, 0.5, 3.7) ayrı bir kategoridir.','Tam sayılar yalnızca: ...-2, -1, 0, 1, 2...','Kesirli sayı asla tam sayı olamaz.']}},
+    {s:'Bir dağın zirvesi +2850 metre, dipten tünel girişi -120 metre. Aralarındaki yükseklik farkı kaç metredir?',sec:['2730','2970','2850','3000'],d:1,cozum:{sonuc:'Doğru! Zirve ile tünel arasındaki fark 2970 metredir.',adimlar:['Zirve: +2850 metre (deniz seviyesinin üstü)','Tünel girişi: -120 metre (deniz seviyesinin altı)','Fark = 2850 - (-120) = 2850 + 120 = 2970 metre','İki noktanın farkını bulmak için büyükten küçüğü çıkarırız.']}}
+  ]
+},
+{
+  id:'d4',baslik:'Kesirler',renk:'#FAECE7',renk2:'#993C1D',
+  rozet:{id:'r4',ad:'Kesir Ustası',acik:'Kesirler dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Kesir nedir?</h3>'+
+      '<p>Bir bütünü eşit parçalara böldüğümüzde, bu parçaların bir kısmını ifade etmek için <strong>kesir</strong> kullanılır.</p>'+
+      '<p>Örnek: Pizzayı 4 eşit parçaya böldük ve 1 tanesini aldık → <strong>1/4</strong> (dörtte bir)</p>'+
+      '<div style="display:flex;gap:16px;align-items:center;margin:1rem 0;flex-wrap:wrap">'+
+        '<div style="text-align:center">'+
+          '<svg viewBox="0 0 140 140" width="130" height="130" id="pizza-svg" style="cursor:pointer" onclick="pizzaTikla()"></svg>'+
+          '<div style="font-size:12px;color:var(--text2);margin-top:4px" id="pizza-label">Tıkla, dilimle!</div>'+
+        '</div>'+
+        '<div style="flex:1;min-width:180px"><div class="bilgi-kutu" id="pizza-acik">Pizza bütün hâlde. Tıklayınca dilimlenecek ve kesri göreceksin.</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Pay ve payda</h3>'+
+      '<p>Bir kesirde iki sayı vardır:</p>'+
+      '<div style="display:flex;align-items:center;justify-content:center;gap:32px;margin:1.25rem 0;flex-wrap:wrap">'+
+        '<div style="text-align:center;background:var(--bg2);padding:1.25rem 2rem;border-radius:var(--rl)">'+
+          '<div style="font-size:36px;font-weight:500;color:#993C1D;border-bottom:3px solid #993C1D;padding-bottom:6px">3</div>'+
+          '<div style="font-size:36px;font-weight:500;color:#185FA5;padding-top:6px">8</div>'+
+        '</div>'+
+        '<div style="font-size:13px;line-height:2.2">'+
+          '<div><span style="color:#993C1D;font-weight:500">3 → PAY</span>: Kaç parça aldık</div>'+
+          '<div><span style="color:#185FA5;font-weight:500">8 → PAYDA</span>: Bütün kaç parçaya bölündü</div>'+
+          '<div style="margin-top:6px;color:var(--text2)">Okunuşu: "sekizde üç"</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="adim-kutu">Kural: Payda ne kadar büyürse, her parça o kadar küçülür.<br>1/2 > 1/4 > 1/8 — payda büyüdükçe parça küçülür!</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Gerçek hayat örnekleri</h3>'+
+      '<div class="ornek-kutu">🕐 3/4 saat = 45 dakika (1 saatin dörtte üçü)</div>'+
+      '<div class="ornek-kutu">🧪 1/2 bardak su = yarım bardak</div>'+
+      '<div class="ornek-kutu">🏪 İndirim: fiyatın 1/4\'ü = çeyreği kadar indirim</div>'+
+      '<div class="ornek-kutu">🍕 Pizzanın 2/3\'ü yendi = üçte ikisi bitti</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Kesir büyüklük karşılaştırması</h3>'+
+      '<p>Aynı paydaya sahip kesirlerde pay büyükse kesir büyüktür. Aynı paya sahipse payda küçükse kesir büyüktür.</p>'+
+      '<div id="kesir-bar" style="margin:1rem 0"></div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var dilim=1,toplam=1;
+    function pizzaCiz(){
+      var svg=document.getElementById('pizza-svg');if(!svg)return;
+      svg.innerHTML='';
+      var cx=70,cy=70,r=58;
+      var renkler=['#E24B4A','#F09595','#FAEEDA','#EAF3DE','#B5D4F4','#CECBF6','#F5C4B3','#C0DD97'];
+      if(toplam===1){
+        var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+        c.setAttribute('fill','#E24B4A');c.setAttribute('stroke','white');c.setAttribute('stroke-width','2');
+        svg.appendChild(c);
+      } else {
+        for(var i=0;i<toplam;i++){
+          var b=(i/toplam)*2*Math.PI-Math.PI/2;
+          var e=((i+1)/toplam)*2*Math.PI-Math.PI/2;
+          var x1=cx+r*Math.cos(b),y1=cy+r*Math.sin(b);
+          var x2=cx+r*Math.cos(e),y2=cy+r*Math.sin(e);
+          var arc=e-b>Math.PI?1:0;
+          var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+          p.setAttribute('d','M'+cx+' '+cy+' L'+x1+' '+y1+' A'+r+' '+r+' 0 '+arc+' 1 '+x2+' '+y2+' Z');
+          p.setAttribute('fill',i<dilim?renkler[i%renkler.length]:'var(--bg2)');
+          p.setAttribute('stroke','white');p.setAttribute('stroke-width','2');
+          svg.appendChild(p);
+        }
+      }
+      var acik={1:'Bütün pizza = 1 tam. Henüz dilimlenmedi.',2:'İkiye böldük. Her dilim 1/2. Renkli kısım: '+dilim+'/2.',3:'Üçe böldük. Her dilim 1/3. Renkli kısım: '+dilim+'/3.',4:'Dörde böldük. Her dilim 1/4. Renkli kısım: '+dilim+'/4.',6:'Altıya böldük. Her dilim 1/6. Renkli kısım: '+dilim+'/6.',8:'Sekize böldük. Her dilim 1/8. Renkli kısım: '+dilim+'/8.'};
+      document.getElementById('pizza-label').textContent=toplam===1?'1 bütün':dilim+' / '+toplam;
+      document.getElementById('pizza-acik').textContent=acik[toplam];
+    }
+    window.pizzaTikla=function(){
+      var s=[1,2,3,4,6,8];var idx=s.indexOf(toplam);
+      toplam=s[(idx+1)%s.length];dilim=Math.max(1,Math.floor(toplam/2));pizzaCiz();
+    };
+    pizzaCiz();
+    var kesirler=[{k:'1/2',v:50},{k:'1/3',v:33},{k:'2/3',v:67},{k:'1/4',v:25},{k:'3/4',v:75}];
+    var html='<div style="display:flex;flex-direction:column;gap:8px">';
+    kesirler.forEach(function(x){
+      html+='<div style="display:flex;align-items:center;gap:10px">'+
+        '<span style="font-size:14px;font-weight:500;width:36px;color:var(--text2)">'+x.k+'</span>'+
+        '<div style="flex:1;background:var(--bg2);border-radius:4px;height:20px;overflow:hidden">'+
+          '<div style="width:'+x.v+'%;height:100%;background:#993C1D;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px">'+
+            '<span style="font-size:11px;color:white">%'+x.v+'</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    });
+    html+='</div>';
+    document.getElementById('kesir-bar').innerHTML=html;
+  },
+  sorular:[
+    {s:'Bir pastayı 8 eşit parçaya böldük, 3 tanesini yedik. Bu hangi kesirdir?',sec:['8/3','3/8','1/3','5/8'],d:1,cozum:{sonuc:'Doğru! 3/8: pay = yenen parça, payda = toplam parça.',adimlar:['Toplam parça sayısı → payda → 8','Alınan (yenen) parça → pay → 3','Kesir: 3/8 (sekizde üç)','Dikkat: 8/3 DEĞİL — pay üste, payda alta yazılır.']}},
+    {s:'1/2 kesrinde payda kaçtır?',sec:['1','2','1/2 tamamı','Payda yok'],d:1,cozum:{sonuc:'Doğru! 1/2 kesrinde payda 2\'dir.',adimlar:['1/2 → üst kısım (1) = pay','1/2 → alt kısım (2) = payda','Payda, bütünün kaç parçaya bölündüğünü gösterir.','Burada bütün 2 eşit parçaya bölünmüş.']}},
+    {s:'"Çeyrek saat" kaç dakikadır? (1 saat = 60 dakika)',sec:['10','15','20','30'],d:1,cozum:{sonuc:'Doğru! Çeyrek saat = 15 dakika.',adimlar:['Çeyrek = 1/4 (dörtte bir)','1 saat = 60 dakika','1/4 saatlik hesap: 60 ÷ 4 = 15 dakika','Yani 1/4 × 60 = 15 dakika.']}},
+    {s:'Hangi kesir en büyüktür?',sec:['1/2','1/4','1/8','1/3'],d:0,cozum:{sonuc:'Doğru! 1/2 en büyük kesirdir.',adimlar:['Tüm kesirlerde pay 1 — sadece paydalar farklı.','Payda büyüdükçe her parça küçülür:','1/2 → bütünü 2\'ye böl → büyük parça','1/3 → 3\'e böl → daha küçük','1/4 → 4\'e böl → daha da küçük','1/8 → 8\'e böl → en küçük parça','Sonuç: 1/2 > 1/3 > 1/4 > 1/8']}},
+    {s:'3/3 kesri neye eşittir?',sec:['1/3','0','1 bütün','3'],d:2,cozum:{sonuc:'Doğru! 3/3 = 1 bütün.',adimlar:['3/3 → bütünü 3\'e böldük, 3 parça aldık.','Yani bütün parçaları aldık.','Pay = Payda olduğunda kesir = 1 bütün.','Başka örnekler: 4/4 = 1, 7/7 = 1, 100/100 = 1']}},
+    {s:'Bir kekin 3/8\'i yenildi. Geriye kaç kaldı?',sec:['3/8','5/8','1/8','2/8'],d:1,cozum:{sonuc:'Doğru! 5/8 kaldı.',adimlar:['Tamamı = 8/8 (8 parçanın 8\'i)','Yenilen = 3/8','Kalan = 8/8 - 3/8 = 5/8','Yani 8 parçadan 3\'ü gitti, 5\'i kaldı.']}},
+    {s:'2/6 kesrini sadeleştirebilir miyiz? Sadeleştirilmiş hali nedir?',sec:['1/3','2/3','1/6','3/6'],d:0,cozum:{sonuc:'Doğru! 2/6 sadeleştirilince 1/3 olur.',adimlar:['Pay ve paydayı aynı sayıya bölebilirsek sadeleştiririz.','2 ve 6 sayılarının ortak böleni: 2','Pay: 2 ÷ 2 = 1','Payda: 6 ÷ 2 = 3','Sonuç: 1/3']}},
+    {s:'Bir sınıfın 2/3\'ü kız öğrenci. 30 kişilik sınıfta kaç kız var?',sec:['10','15','20','25'],d:2,cozum:{sonuc:'Doğru! 30 kişinin 2/3\'ü = 20 kız.',adimlar:['2/3 hesaplamanın yolu:','Adım 1: Toplam sayıyı paydaya böl → 30 ÷ 3 = 10','Adım 2: Çıkan sonucu payla çarp → 10 × 2 = 20','Yani 30 kişinin 2/3\'ü = 20 kişi.']}},
+    {s:'Hangi kesir 1/2\'den büyüktür?',sec:['1/4','2/5','3/5','1/3'],d:2,cozum:{sonuc:'Doğru! 3/5, 1/2\'den büyüktür.',adimlar:['1/2 = 0,5 (ondalık karşılığı)','Diğer kesirleri hesaplayalım:','1/4 = 0,25 → 0,5\'ten küçük','2/5 = 0,4 → 0,5\'ten küçük','3/5 = 0,6 → 0,5\'ten büyük ✓','1/3 ≈ 0,33 → 0,5\'ten küçük']}},
+    {s:'4/4 kesri ile 6/6 kesrini karşılaştır.',sec:['4/4 > 6/6','4/4 < 6/6','4/4 = 6/6','Karşılaştırılamaz'],d:2,cozum:{sonuc:'Doğru! Her ikisi de 1 bütüne eşittir.',adimlar:['4/4 → bütünü 4\'e böl, 4 parça al → tamamı → 1','6/6 → bütünü 6\'ya böl, 6 parça al → tamamı → 1','Pay = Payda olan her kesir 1\'e eşittir.','4/4 = 6/6 = 8/8 = 100/100 = 1']}}
+  ]
+},
+{
+  id:'d5',baslik:'Ondalıklı sayılar',renk:'#E1F5EE',renk2:'#0F6E56',
+  rozet:{id:'r5',ad:'Ondalık Ustası',acik:'Ondalıklı sayılar dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Ondalıklı sayı nedir?</h3>'+
+      '<p>Tam sayılar arasındaki değerleri göstermek için <strong>ondalıklı sayılar</strong> kullanılır. Türkiye\'de virgül (,) kullanılır: <strong>3,75</strong></p>'+
+      '<div style="background:var(--bg2);border-radius:var(--rl);padding:1.25rem;margin:1rem 0;text-align:center">'+
+        '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:44px;font-weight:500">'+
+          '<span id="od-tam" style="color:#0F6E56;cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s" onclick="odTikla(0)">3</span>'+
+          '<span style="color:var(--text2);font-size:30px">,</span>'+
+          '<span id="od-onda" style="color:#185FA5;cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s" onclick="odTikla(1)">7</span>'+
+          '<span id="od-yuzde" style="color:#993C1D;cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s" onclick="odTikla(2)">5</span>'+
+        '</div>'+
+        '<div id="od-acik" class="bilgi-kutu" style="margin:12px 0 0;text-align:left">Her rakama tıkla, hangi basamakta olduğunu gör.</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Ondalık basamaklar</h3>'+
+      '<p>Virgülden sonraki rakamlar küçük değerleri ifade eder:</p>'+
+      '<div style="overflow-x:auto;margin:1rem 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:center">'+
+        '<tr style="background:var(--bg2)"><td style="padding:8px;border:0.5px solid var(--border)">TAM KISIM</td><td style="padding:8px;border:0.5px solid var(--border)">VİRGÜL</td><td style="padding:8px;border:0.5px solid var(--border)">ONDA BİRLER</td><td style="padding:8px;border:0.5px solid var(--border)">YÜZDE BİRLER</td><td style="padding:8px;border:0.5px solid var(--border)">BİNDE BİRLER</td></tr>'+
+        '<tr><td style="padding:8px;border:0.5px solid var(--border);font-weight:500">3</td><td style="padding:8px;border:0.5px solid var(--border)">,</td><td style="padding:8px;border:0.5px solid var(--border);color:#185FA5;font-weight:500">7</td><td style="padding:8px;border:0.5px solid var(--border);color:#993C1D;font-weight:500">5</td><td style="padding:8px;border:0.5px solid var(--border);color:var(--text2)">0</td></tr>'+
+        '<tr style="background:var(--bg2)"><td style="padding:6px;border:0.5px solid var(--border);font-size:11px;color:var(--text2)">3×1</td><td style="padding:6px;border:0.5px solid var(--border)"></td><td style="padding:6px;border:0.5px solid var(--border);font-size:11px;color:#185FA5">7÷10 = 0,7</td><td style="padding:6px;border:0.5px solid var(--border);font-size:11px;color:#993C1D">5÷100 = 0,05</td><td style="padding:6px;border:0.5px solid var(--border);font-size:11px;color:var(--text2)">0÷1000 = 0</td></tr>'+
+      '</table></div>'+
+      '<div class="adim-kutu">3,75 = 3 + 0,7 + 0,05 = 3 tam, 7 onda birlik, 5 yüzde birlik</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Gerçek hayat: market fişi</h3>'+
+      '<p>Ondalıklı sayılar her gün fiyatlarda karşımıza çıkar. Ürünlere tıklayarak seç, toplama bak:</p>'+
+      '<div style="background:var(--bg2);border-radius:var(--rl);padding:1rem;margin:1rem 0">'+
+        '<div id="fis-liste"></div>'+
+        '<div style="border-top:0.5px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-size:14px;font-weight:500">'+
+          '<span>Toplam</span><span id="fis-toplam" style="color:#0F6E56">0,00 TL</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Ondalıklı sayı doğrusu</h3>'+
+      '<p>Ondalıklı sayılar tam sayılar arasında konumlanır. Kaydır, gör:</p>'+
+      '<input type="range" id="od-slider" min="0" max="500" value="250" style="width:100%;margin:.5rem 0" oninput="odSlider(this.value)">'+
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>'+
+      '<div id="od-slider-label" style="text-align:center;font-size:20px;font-weight:500;margin-top:8px;color:#0F6E56">2,50</div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var aciklar=[
+      '3 → TAM KISIM (virgülün solu)\nDeğeri: 3 × 1 = 3\nBu kısım tam sayıdır.',
+      '7 → ONDA BİRLER basamağı (virgülden sonra 1. hane)\nDeğeri: 7 ÷ 10 = 0,7\nYani 7 onda birlik parça.',
+      '5 → YÜZDE BİRLER basamağı (virgülden sonra 2. hane)\nDeğeri: 5 ÷ 100 = 0,05\nYani 5 yüzde birlik parça.'
+    ];
+    window.odTikla=function(i){
+      var idler=['od-tam','od-onda','od-yuzde'];
+      var renkler=['#E1F5EE','#E6F1FB','#FAECE7'];
+      idler.forEach(function(id,j){
+        document.getElementById(id).style.background=j===i?renkler[j]:'';
+      });
+      document.getElementById('od-acik').textContent=aciklar[i];
+    };
+    var urunler=[{ad:'Ekmek',fiyat:9.50},{ad:'Süt 1L',fiyat:27.75},{ad:'Yumurta (10\'lu)',fiyat:45.00},{ad:'Peynir 200g',fiyat:38.25}];
+    var secili=[];
+    function fisGuncelle(){
+      var html=urunler.map(function(u,i){
+        var sec=secili.indexOf(i)>=0;
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="fisTikla('+i+')">'+
+          '<div style="display:flex;align-items:center;gap:8px">'+
+            '<div style="width:16px;height:16px;border-radius:4px;border:0.5px solid var(--border2);background:'+(sec?'var(--teal)':'')+'"></div>'+
+            '<span style="font-size:13px">'+u.ad+'</span>'+
+          '</div>'+
+          '<span style="font-size:13px;font-weight:500;color:'+(sec?'var(--teal)':'var(--text2)')+'">'+u.fiyat.toFixed(2)+' TL</span>'+
+        '</div>';
+      }).join('');
+      document.getElementById('fis-liste').innerHTML=html;
+      var top=secili.reduce(function(t,i){return t+urunler[i].fiyat;},0);
+      document.getElementById('fis-toplam').textContent=top.toFixed(2)+' TL';
+    }
+    window.fisTikla=function(i){
+      var idx=secili.indexOf(i);
+      if(idx>=0)secili.splice(idx,1);else secili.push(i);
       fisGuncelle();
-      window.odSlider = function(v){
-        var sayi = v/100;
-        document.getElementById('od-slider-label').textContent = sayi.toFixed(2);
-      };
-    },
-    sorular:[
-      {s:'12,75 sayısında 7 rakamı hangi basamaktadır?',sec:['Birler','Onlar','Onda birler','Yüzde birler'],d:2,a:'✓ Doğru! Virgülün hemen sağındaki basamak onda birlerdir. 7 onda biri = 0,7.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:36px;font-weight:500;margin:1rem 0"><span style="color:var(--text2)">12</span><span style="color:var(--text2);font-size:24px">,</span><span style="color:#185FA5;background:#E6F1FB;border-radius:6px;padding:2px 8px">7</span><span style="color:var(--text2)">5</span></div><div style="text-align:center;font-size:13px;color:#185FA5">7 → onda birler → 0,7</div>';}},
-      {s:'3,50 TL kaç lira kaç kuruştur?',sec:['35 lira 0 kuruş','3 lira 50 kuruş','0 lira 350 kuruş','3 lira 5 kuruş'],d:1,a:'✓ Doğru! Virgülün solunda 3 lira, sağında 50 kuruş.',
-        interaktif:function(div){div.innerHTML='<div style="background:var(--bg2);border-radius:var(--radius);padding:1rem;margin:1rem 0;display:flex;justify-content:space-around;text-align:center"><div><div style="font-size:28px;font-weight:500;color:#0F6E56">3</div><div style="font-size:11px;color:var(--text2)">Lira</div></div><div style="font-size:28px;color:var(--text2)">,</div><div><div style="font-size:28px;font-weight:500;color:#993C1D">50</div><div style="font-size:11px;color:var(--text2)">Kuruş</div></div></div>';}},
-      {s:'Sayı doğrusunda 2,5 nerededir?',sec:['2 ile 3 arasında, tam ortada','2&#39;nin solunda','3&#39;ün sağında','1 ile 2 arasında'],d:0,a:'✓ Doğru! 2,5 tam olarak 2 ile 3&#39;ün ortasındadır.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 1rem"><div style="height:4px;background:var(--border2);border-radius:2px;position:relative"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#0F6E56;border:2px solid white"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px"><span>2</span><span style="color:#0F6E56;font-weight:500">2,5</span><span>3</span></div></div>';}},
-      {s:'0,1 + 0,2 kaçtır?',sec:['0,3','0,12','1,2','3'],d:0,a:'✓ Doğru! 0,1 + 0,2 = 0,3.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:12px;font-size:24px;font-weight:500;margin:1rem 0"><span style="color:#185FA5">0,1</span><span style="color:var(--text2)">+</span><span style="color:#993C1D">0,2</span><span style="color:var(--text2)">=</span><span style="color:#0F6E56">0,3</span></div>';}},
-      {s:'Hangi sayı 4 ile 5 arasındadır?',sec:['3,9','4,5','5,1','6,0'],d:1,a:'✓ Doğru! 4,5 tam olarak 4 ile 5 arasındadır.',
-        interaktif:function(div){div.innerHTML='<div style="position:relative;margin:1.5rem 1rem"><div style="height:4px;background:var(--border2);border-radius:2px"><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#0F6E56;border:2px solid white"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px"><span>4</span><span style="color:#0F6E56;font-weight:500">4,5</span><span>5</span></div></div>';}}
-    
-      ,{s:'Hangisi en büyük ondalıklı sayıdır?',sec:['0,9','0,09','0,99','0,009'],d:2,a:'✓ Doğru! 0,99 = 99 yüzde birlik. Diğerlerinden büyük.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;flex-direction:column;gap:6px;margin:1rem 0">'+[{v:'0,9',r:90},{v:'0,09',r:9},{v:'0,99',r:99,sec:true},{v:'0,009',r:0.9}].map(function(x){return'<div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:'+(x.sec?'500':'400')+';width:40px;color:'+(x.sec?'#0F6E56':'var(--text)')+'">'+x.v+'</span><div style="flex:1;background:var(--bg2);border-radius:4px;height:14px;overflow:hidden"><div style="width:'+x.r+'%;height:100%;background:'+(x.sec?'#0F6E56':'#185FA5')+';border-radius:4px"></div></div></div>';}).join('')+'</div>';}},
-      {s:'1,5 + 2,3 kaçtır?',sec:['3,8','3,53','4,8','2,8'],d:0,a:'✓ Doğru! Virgülleri hizala: 1,5 + 2,3 = 3,8.',
-        interaktif:function(div){div.innerHTML='<div style="font-family:monospace;font-size:18px;text-align:center;margin:1rem 0;background:var(--bg2);padding:1rem;border-radius:var(--radius)"><div>  1,5</div><div>+ 2,3</div><div style="border-top:1px solid var(--border2);margin:4px 0"></div><div style="color:#0F6E56;font-weight:500">  3,8</div></div>';}},
-      {s:'5,75 sayısında 7 rakamının değeri nedir?',sec:['7','0,7','0,07','70'],d:1,a:'✓ Doğru! Virgülden sonra ilk basamak onda birler. 7 onda biri = 0,7.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:36px;font-weight:500;margin:1rem 0"><span style="color:var(--text2)">5</span><span style="color:var(--text2);font-size:24px">,</span><span style="color:#185FA5;background:#E6F1FB;border-radius:6px;padding:2px 8px">7</span><span style="color:var(--text2)">5</span></div><div style="text-align:center;font-size:13px;color:#185FA5">7 onda birler basamağı = 0,7</div>';}},
-      {s:'Bir ip 3,50 metre uzunluğunda. 1,25 metresini kestik. Kalan kaç metre?',sec:['2,75','2,25','4,75','1,75'],d:1,a:'✓ Doğru! 3,50 - 1,25 = 2,25 metre.',
-        interaktif:function(div){div.innerHTML='<div style="font-family:monospace;font-size:18px;text-align:center;margin:1rem 0;background:var(--bg2);padding:1rem;border-radius:var(--radius)"><div>  3,50</div><div>- 1,25</div><div style="border-top:1px solid var(--border2);margin:4px 0"></div><div style="color:#0F6E56;font-weight:500">  2,25</div></div>';}},
-      {s:'0,5 ile 1/2 karşılaştırıldığında ne söylenebilir?',sec:['0,5 daha büyük','1/2 daha büyük','İkisi eşit','Karşılaştırılamaz'],d:2,a:'✓ Doğru! 1/2 = 0,5. Ondalıklı sayı ve kesir aynı değeri gösterebilir.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:16px;font-size:24px;font-weight:500;margin:1rem 0"><span style="color:#185FA5">0,5</span><span style="color:var(--text2)">=</span><span style="color:#993C1D">1/2</span></div><div style="text-align:center;font-size:12px;color:var(--text2)">Farklı gösterim, aynı değer</div>';}}
-
-    ]
+    };
+    fisGuncelle();
+    window.odSlider=function(v){
+      document.getElementById('od-slider-label').textContent=(v/100).toFixed(2);
+    };
   },
-  {
-    id:'d6', baslik:'Yüzdeler', renk:'#FAEEDA', renk2:'#854F0B',
-    rozet:{id:'r6', ad:'Yüzde Uzmanı', acik:'Yüzdeler dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart">'+
-        '<div class="icerik-bolum"><h3>Yüzde nedir?</h3><p>Yüzde, bir şeyin 100 üzerinden ne kadarını ifade ettiğini gösterir. % işareti "yüzde" demektir. %50 = 100&#39;ün 50&#39;si = yarısı.</p></div>'+
-        '<div style="margin:1rem 0">'+
-          '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Kaydır, görsel olarak izle</span><span id="yuzde-sayi" style="font-weight:500;color:#854F0B">%50</span></div>'+
-          '<input type="range" id="yuzde-slider" min="0" max="100" value="50" style="width:100%" oninput="yuzdeSlider(this.value)">'+
-          '<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:12px" id="yuzde-grid"></div>'+
-          '<div id="yuzde-acik" class="bilgi-kutu" style="margin-top:10px">%50: 100 kutunun yarısı dolu.</div>'+
+  sorular:[
+    {s:'12,75 sayısında 7 rakamı hangi basamaktadır?',sec:['Birler','Onlar','Onda birler','Yüzde birler'],d:2,cozum:{sonuc:'Doğru! 7, onda birler basamağındadır.',adimlar:['12,75 → virgülün solunda: 12 (tam kısım)','Virgülün sağında: 7 ve 5','Virgülden sonra ilk hane → onda birler','7 → onda birler → değeri: 7÷10 = 0,7']}},
+    {s:'3,50 TL kaç lira kaç kuruştur?',sec:['35 lira 0 kuruş','3 lira 50 kuruş','0 lira 350 kuruş','3 lira 5 kuruş'],d:1,cozum:{sonuc:'Doğru! 3,50 TL = 3 lira 50 kuruş.',adimlar:['Virgülün solu = lira (tam kısım) → 3 lira','Virgülün sağı = kuruş (1 TL = 100 kuruş)','50 → yüzde birler basamağında → 50 kuruş','Sonuç: 3 lira 50 kuruş']}},
+    {s:'Hangisi en büyük ondalıklı sayıdır?',sec:['0,9','0,09','0,99','0,009'],d:2,cozum:{sonuc:'Doğru! 0,99 en büyüktür.',adimlar:['Her sayıyı aynı basamağa taşıyalım:','0,9 = 0,900','0,09 = 0,090','0,99 = 0,990 ← en büyük','0,009 = 0,009','En büyük: 0,990 = 0,99']}},
+    {s:'1,5 + 2,3 kaçtır?',sec:['3,8','3,53','4,8','2,8'],d:0,cozum:{sonuc:'Doğru! 1,5 + 2,3 = 3,8.',adimlar:['Virgülleri hizala:','  1,5','+ 2,3','------','Onda birler: 5+3=8','Tam kısım: 1+2=3','Sonuç: 3,8']}},
+    {s:'5,75 sayısında 5 rakamının (virgülden sonraki) değeri nedir?',sec:['5','0,5','0,05','50'],d:2,cozum:{sonuc:'Doğru! 0,05.',adimlar:['5,75 → 5 tam, virgülden sonra 7 ve 5','Virgülden sonra 1. hane (7) → onda birler → 7÷10=0,7','Virgülden sonra 2. hane (5) → yüzde birler → 5÷100=0,05','Sonuç: virgülden sonraki 5\'in değeri 0,05\'tir.']}},
+    {s:'3,50 - 1,25 kaçtır?',sec:['2,75','2,25','4,75','1,25'],d:1,cozum:{sonuc:'Doğru! 3,50 - 1,25 = 2,25.',adimlar:['Virgülleri hizala:','  3,50','- 1,25','------','Yüzde birler: 0-5 olmaz, 10-5=5 (ondan ödünç al)','Onda birler: 4-2=2 (ödünç verdik)','Tam kısım: 3-1=2','Sonuç: 2,25']}},
+    {s:'Sayı doğrusunda 2,5 nerededir?',sec:['2 ile 3 arasında tam ortada','2\'nin solunda','3\'ün sağında','1 ile 2 arasında'],d:0,cozum:{sonuc:'Doğru! 2,5 tam olarak 2 ile 3 arasındadır.',adimlar:['2,5 → tam kısmı 2, ondalığı 0,5','0,5 = yarım → tam ortada','2 + 0,5 = 2,5 → 2 ile 3\'ün ortasında','Sayı doğrusunda 2 ile 3 arasına tam oturur.']}},
+    {s:'0,1 + 0,2 kaçtır?',sec:['0,3','0,12','1,2','0,21'],d:0,cozum:{sonuc:'Doğru! 0,1 + 0,2 = 0,3.',adimlar:['0,1 → 1 onda birlik','0,2 → 2 onda birlik','Toplam: 1+2 = 3 onda birlik','3 onda birlik = 0,3']}},
+    {s:'Bir ürün 47,50 TL, bir diğeri 23,75 TL. Toplam kaç TL?',sec:['70,25 TL','71,25 TL','71,75 TL','70,75 TL'],d:1,cozum:{sonuc:'Doğru! 47,50 + 23,75 = 71,25 TL.',adimlar:['  47,50','+ 23,75','-------','Yüzde birler: 0+5=5','Onda birler: 5+7=12 → yaz 2, taşı 1','Tam kısım: 47+23+1(taşınan)=71','Sonuç: 71,25 TL']}},
+    {s:'0,5 ile 1/2 karşılaştırıldığında ne söylenebilir?',sec:['0,5 daha büyük','1/2 daha büyük','İkisi eşittir','Karşılaştırılamaz'],d:2,cozum:{sonuc:'Doğru! 0,5 ve 1/2 eşittir.',adimlar:['1/2 hesabı: pay ÷ payda = 1 ÷ 2 = 0,5','0,5 = 0,5','Her ikisi de aynı değeri gösterir.','Kesir ve ondalık birbirinin farklı yazım biçimidir.']}}
+  ]
+},
+{
+  id:'d6',baslik:'Yüzdeler',renk:'#FAEEDA',renk2:'#854F0B',
+  rozet:{id:'r6',ad:'Yüzde Uzmanı',acik:'Yüzdeler dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Yüzde nedir?</h3>'+
+      '<p><strong>Yüzde (%)</strong>, bir miktarın 100 üzerinden ifadesidir. "Yüzde" kelimesi kelime anlamıyla "yüzde biri" demektir.</p>'+
+      '<p>%50 → "yüzde elli" → 100\'ün 50\'si → yani <strong>yarısı</strong></p>'+
+      '<div style="margin:1rem 0">'+
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">'+
+          '<span style="color:var(--text2)">Kaydır ve gözlemle</span>'+
+          '<span id="yuzde-goster" style="font-weight:500;color:#854F0B">%50</span>'+
         '</div>'+
-        '<div class="icerik-bolum"><h3>İndirim hesaplama</h3><p>Bir ürün 200 TL, %25 indirim var. 200 × 25 ÷ 100 = 50 TL indirim. Yeni fiyat: 150 TL.</p></div>'+
-        '<div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem;margin:1rem 0">'+
-          '<div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">'+
-            '<div style="flex:1;min-width:120px"><label style="font-size:11px;color:var(--text2)">Fiyat (TL)</label>'+
-              '<input type="number" id="ind-fiyat" value="200" style="width:100%;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:14px;margin-top:4px" oninput="indHesapla()"></div>'+
-            '<div style="flex:1;min-width:120px"><label style="font-size:11px;color:var(--text2)">İndirim (%)</label>'+
-              '<input type="number" id="ind-pct" value="25" min="0" max="100" style="width:100%;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:14px;margin-top:4px" oninput="indHesapla()"></div>'+
-          '</div>'+
-          '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center">'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--text2)">İndirim miktarı</div><div id="ind-miktar" style="font-size:18px;font-weight:500;color:#E24B4A">50,00 TL</div></div>'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--text2)">Yeni fiyat</div><div id="ind-yeni" style="font-size:18px;font-weight:500;color:#0F6E56">150,00 TL</div></div>'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--text2)">Kazanç</div><div id="ind-kazanc" style="font-size:18px;font-weight:500;color:#854F0B">%25</div></div>'+
-          '</div>'+
+        '<input type="range" id="yuzde-slider" min="0" max="100" value="50" style="width:100%" oninput="yuzdeSlider(this.value)">'+
+        '<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin-top:10px" id="yuzde-grid"></div>'+
+        '<div id="yuzde-acik" class="bilgi-kutu" style="margin-top:10px"></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Yüzde hesaplama</h3>'+
+      '<p>Bir sayının yüzdesini bulmak için:</p>'+
+      '<div class="adim-kutu">Yüzde hesabı = Sayı × Yüzde ÷ 100</div>'+
+      '<div class="ornek-kutu">300 TL\'nin %20\'si = 300 × 20 ÷ 100 = 60 TL</div>'+
+      '<div class="ornek-kutu">40 öğrencinin %25\'i = 40 × 25 ÷ 100 = 10 öğrenci</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>İndirim hesaplama</h3>'+
+      '<p>En sık kullanılan yüzde uygulaması indirim hesabıdır:</p>'+
+      '<div style="background:var(--bg2);border-radius:var(--rl);padding:1.25rem;margin:1rem 0">'+
+        '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">İndirim hesaplayıcı — dene!</div>'+
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+          '<div style="flex:1;min-width:120px"><label style="font-size:11px;color:var(--text2)">Ürün fiyatı (TL)</label>'+
+            '<input type="number" id="ind-fiyat" value="200" style="width:100%;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:14px;margin-top:4px" oninput="indHesapla()"></div>'+
+          '<div style="flex:1;min-width:120px"><label style="font-size:11px;color:var(--text2)">İndirim oranı (%)</label>'+
+            '<input type="number" id="ind-oran" value="25" min="0" max="100" style="width:100%;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:14px;margin-top:4px" oninput="indHesapla()"></div>'+
         '</div>'+
-      '</div>';
-    },
-    kurulum: function(){
-      function yuzdeGrid(v){
-        var html='';
-        for(var i=0;i<100;i++) html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<v?'#854F0B':'var(--border)')+'"></div>';
-        document.getElementById('yuzde-grid').innerHTML=html;
-        var aciklar={0:'%0: Hiçbir şey yok.',10:'%10: Her 10 kutudan 1&#39;i.',25:'%25: Çeyrek. Dörtte biri.',50:'%50: Tam yarısı.',75:'%75: Dörtte üçü.',100:'%100: Tamamı.'};
-        document.getElementById('yuzde-acik').textContent=aciklar[v]||'%'+v+': 100 kutunun '+v+' tanesi dolu.';
-        document.getElementById('yuzde-sayi').textContent='%'+v;
-      }
-      window.yuzdeSlider=function(v){ yuzdeGrid(parseInt(v)); };
-      yuzdeGrid(50);
-      window.indHesapla=function(){
-        var f=parseFloat(document.getElementById('ind-fiyat').value)||0;
-        var p=parseFloat(document.getElementById('ind-pct').value)||0;
-        var miktar=Math.round(f*p/100*100)/100;
-        var yeni=Math.round((f-miktar)*100)/100;
-        document.getElementById('ind-miktar').textContent=miktar.toFixed(2)+' TL';
-        document.getElementById('ind-yeni').textContent=yeni.toFixed(2)+' TL';
-        document.getElementById('ind-kazanc').textContent='%'+p;
-      };
-    },
-    sorular:[
-      {s:'%25 ne anlama gelir?',sec:['25&#39;e bölmek','100&#39;ün 25&#39;i, yani dörtte biri','25 ile çarpmak','25 eklemek'],d:1,a:'✓ Doğru! % işareti "100&#39;de" demektir. %25 = 100&#39;ün 25 parçası = 1/4.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<100;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<25?'#854F0B':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;color:#854F0B">25 turuncu kutu = %25</div>';}},
-      {s:'200 TL&#39;lik üründe %10 indirim kaç TL&#39;dir?',sec:['10 TL','20 TL','200 TL','100 TL'],d:1,a:'✓ Doğru! 200 × 10 ÷ 100 = 20 TL indirim.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#854F0B">200 TL</span><span style="color:var(--text2)">×</span><span style="color:#185FA5">%10</span><span style="color:var(--text2)">=</span><span style="color:#0F6E56">20 TL indirim</span></div>';}},
-      {s:'30 öğrencinin %60&#39;ı kız. Kaç kız öğrenci var?',sec:['6','18','12','20'],d:1,a:'✓ Doğru! 30 × 60 ÷ 100 = 18 kız öğrenci.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:1rem 0">';for(var i=0;i<30;i++)html+='<div style="aspect-ratio:1;border-radius:3px;background:'+(i<18?'#185FA5':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;margin-top:6px"><span style="color:#185FA5">■ 18 kız</span>  <span style="color:var(--text2)">■ 12 erkek</span></div>';}},
-      {s:'150 TL&#39;ye %20 zam yapıldı. Yeni fiyat kaçtır?',sec:['170 TL','180 TL','130 TL','120 TL'],d:1,a:'✓ Doğru! Zam: 150 × 20 ÷ 100 = 30 TL. Yeni fiyat: 150 + 30 = 180 TL.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#185FA5">150 TL</span><span style="color:var(--text2)">+</span><span style="color:#993C1D">30 TL zam</span><span style="color:var(--text2)">=</span><span style="color:#0F6E56">180 TL</span></div>';}},
-      {s:'%100 ne anlama gelir?',sec:['Çok fazla','Yarısı','Tamamı','Hiçbiri'],d:2,a:'✓ Doğru! %100 = tamamı. Tam bütün.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<100;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:#854F0B"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;color:#854F0B">100 kutunun tamamı = %100</div>';}}
-    
-      ,{s:'Bir markette 80 TL&#39;lik ürün %50 indirimde kaç TL&#39;ye satılır?',sec:['50 TL','40 TL','30 TL','60 TL'],d:1,a:'✓ Doğru! %50 indirim = yarısı kadar indirim. 80 ÷ 2 = 40 TL.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;justify-content:center"><div style="text-align:center;background:var(--bg2);padding:1rem;border-radius:var(--radius)"><div style="font-size:11px;color:var(--text2)">Eski fiyat</div><div style="font-size:22px;font-weight:500;text-decoration:line-through;color:var(--text2)">80 TL</div></div><div style="font-size:20px;color:#E24B4A;font-weight:500">%50</div><div style="text-align:center;background:var(--green-bg);padding:1rem;border-radius:var(--radius)"><div style="font-size:11px;color:var(--green-text)">Yeni fiyat</div><div style="font-size:22px;font-weight:500;color:var(--green-text)">40 TL</div></div></div>';}},
-      {s:'Sınavda 40 sorudan 32&#39;sini doğru yaptın. Başarı yüzden kaçtır?',sec:['%32','%80','%40','%75'],d:1,a:'✓ Doğru! 32 ÷ 40 × 100 = %80.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<40;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<32?'#0F6E56':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;margin-top:6px"><span style="color:#0F6E56">32 doğru</span> / 40 soru = <span style="font-weight:500">%80</span></div>';}},
-      {s:'%10 kaça eşittir?',sec:['1/10 (onda bir)','1/100 (yüzde bir)','1/2 (yarım)','10'],d:0,a:'✓ Doğru! %10 = 10/100 = 1/10. Her 10 birimden 1 tane demektir.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<10;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i===0?'#854F0B':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="text-align:center;font-size:13px;color:#854F0B">10&#39;dan 1 tane = onda bir = %10</div>';}},
-      {s:'500 TL&#39;nin %20&#39;si kaç TL&#39;dir?',sec:['20 TL','100 TL','200 TL','50 TL'],d:1,a:'✓ Doğru! 500 × 20 ÷ 100 = 100 TL.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#185FA5">500 TL</span><span>×</span><span style="color:#854F0B">%20</span><span>=</span><span style="color:#0F6E56">100 TL</span></div>';}},
-      {s:'Bir kişi maaşının %30&#39;unu kira, %20&#39;sini yemek için harcıyor. Toplam ne kadar harcıyor?',sec:['%10','%50','%60','%6'],d:1,a:'✓ Doğru! %30 + %20 = %50. Maaşının yarısı gidere gidiyor.',
-        interaktif:function(div){var html='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;margin:1rem 0">';for(var i=0;i<100;i++)html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<30?'#E24B4A':i<50?'#EF9F27':'var(--border)')+'"></div>';div.innerHTML=html+'</div><div style="display:flex;gap:12px;justify-content:center;font-size:12px;margin-top:6px"><span style="color:#E24B4A">■ %30 kira</span><span style="color:#EF9F27">■ %20 yemek</span><span style="color:var(--text2)">■ %50 kalan</span></div>';}}
-
-    ]
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center">'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:.75rem"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">İndirim miktarı</div><div id="ind-miktar" style="font-size:18px;font-weight:500;color:#E24B4A">50 TL</div></div>'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:.75rem"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">Yeni fiyat</div><div id="ind-yeni" style="font-size:18px;font-weight:500;color:#0F6E56">150 TL</div></div>'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:.75rem"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">Kazanç</div><div id="ind-kazanc" style="font-size:18px;font-weight:500;color:#854F0B">%25</div></div>'+
+        '</div>'+
+        '<div id="ind-adimlar" class="adim-kutu" style="margin-top:12px"></div>'+
+      '</div>'+
+    '</div></div>';
   },
-  {
-    id:'d7', baslik:'Kesir, ondalık ve yüzde dönüşümleri', renk:'#EEEDFE', renk2:'#534AB7',
-    rozet:{id:'r7', ad:'Dönüşüm Uzmanı', acik:'Dönüşümler dersini tamamladın'},
-    icerik: function(){
-      return '<div class="kart">'+
-        '<div class="icerik-bolum"><h3>Üç dil, aynı anlam</h3><p>Kesir, ondalık ve yüzde aynı değeri üç farklı biçimde söyler. 1/2 = 0,5 = %50.</p></div>'+
-        '<div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem;margin:1rem 0">'+
-          '<div style="font-size:13px;color:var(--text2);margin-bottom:12px">Kaydır — üç formu birlikte gör</div>'+
-          '<input type="range" id="don-slider" min="0" max="100" value="50" style="width:100%" oninput="donSlider(this.value)">'+
-          '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px">'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:1rem;text-align:center"><div style="font-size:11px;color:var(--text2);margin-bottom:6px">KESİR</div><div id="don-kesir" style="font-size:20px;font-weight:500;color:#534AB7">1/2</div></div>'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:1rem;text-align:center"><div style="font-size:11px;color:var(--text2);margin-bottom:6px">ONDALIKLİ</div><div id="don-ondalik" style="font-size:20px;font-weight:500;color:#185FA5">0,5</div></div>'+
-            '<div style="background:var(--bg);border-radius:var(--radius);padding:1rem;text-align:center"><div style="font-size:11px;color:var(--text2);margin-bottom:6px">YÜZDE</div><div id="don-yuzde" style="font-size:20px;font-weight:500;color:#854F0B">%50</div></div>'+
+  anlatimKurulum:function(){
+    function yuzdeGuncelle(v){
+      v=parseInt(v);
+      var html='';
+      for(var i=0;i<100;i++) html+='<div style="aspect-ratio:1;border-radius:2px;background:'+(i<v?'#854F0B':'var(--border)')+'"></div>';
+      document.getElementById('yuzde-grid').innerHTML=html;
+      var mesajlar={0:'%0: Hiçbir şey yok.',10:'%10: Her 10 birimden 1\'i. Yani onda biri.',25:'%25: Çeyrek. Dörtte biri.',50:'%50: Tam yarısı.',75:'%75: Dörtte üçü.',100:'%100: Tamamı, bütünü.'};
+      document.getElementById('yuzde-acik').textContent=mesajlar[v]||'%'+v+': 100 kutunun '+v+' tanesi.';
+      document.getElementById('yuzde-goster').textContent='%'+v;
+    }
+    window.yuzdeSlider=function(v){yuzdeGuncelle(parseInt(v));};
+    yuzdeGuncelle(50);
+    window.indHesapla=function(){
+      var f=parseFloat(document.getElementById('ind-fiyat').value)||0;
+      var p=parseFloat(document.getElementById('ind-oran').value)||0;
+      var m=Math.round(f*p/100*100)/100;
+      var y=Math.round((f-m)*100)/100;
+      document.getElementById('ind-miktar').textContent=m.toFixed(2)+' TL';
+      document.getElementById('ind-yeni').textContent=y.toFixed(2)+' TL';
+      document.getElementById('ind-kazanc').textContent='%'+p;
+      document.getElementById('ind-adimlar').textContent=
+        f+' TL × '+p+' ÷ 100 = '+m.toFixed(2)+' TL indirim\n'+f+' - '+m.toFixed(2)+' = '+y.toFixed(2)+' TL yeni fiyat';
+    };
+    indHesapla();
+  },
+  sorular:[
+    {s:'%25 ne anlama gelir?',sec:['25\'e bölmek','100\'ün 25\'i yani dörtte biri','25 ile çarpmak','25 eklemek'],d:1,cozum:{sonuc:'Doğru! %25 = 100\'ün 25 parçası = 1/4.',adimlar:['% işareti "yüzde" = "100\'de" anlamına gelir.','%25 → 100\'ün 25\'i','100 birimi 4 eşit parçaya bölelim → her parça 25','Yani %25 = 1/4 = çeyrek']}},
+    {s:'200 TL\'nin %10\'u kaç TL\'dir?',sec:['10 TL','20 TL','200 TL','100 TL'],d:1,cozum:{sonuc:'Doğru! 200 TL\'nin %10\'u = 20 TL.',adimlar:['Formül: Sayı × Yüzde ÷ 100','200 × 10 ÷ 100','= 2000 ÷ 100','= 20 TL']}},
+    {s:'30 öğrencinin %60\'ı kız. Kaç kız öğrenci var?',sec:['6','18','12','20'],d:1,cozum:{sonuc:'Doğru! 30 öğrencinin %60\'ı = 18 kız.',adimlar:['Formül: Sayı × Yüzde ÷ 100','30 × 60 ÷ 100','= 1800 ÷ 100','= 18 kız öğrenci']}},
+    {s:'150 TL\'lik ürüne %20 zam yapıldı. Yeni fiyat kaçtır?',sec:['170 TL','180 TL','130 TL','120 TL'],d:1,cozum:{sonuc:'Doğru! Yeni fiyat 180 TL.',adimlar:['Adım 1: Zam miktarını bul','150 × 20 ÷ 100 = 30 TL zam','Adım 2: Zammı ekle','150 + 30 = 180 TL yeni fiyat']}},
+    {s:'%100 ne anlama gelir?',sec:['Çok fazla, normali aşmış','Yarısı','Tamamı, bütünü','Hiçbiri'],d:2,cozum:{sonuc:'Doğru! %100 = tamamı.',adimlar:['%100 → 100\'ün 100\'ü','100/100 = 1 → yani bütünün tamamı','%100 indirim → ücretsiz','%100 doluluk → tamamen dolu']}},
+    {s:'80 TL\'lik ürün %50 indirimde kaç TL\'ye satılır?',sec:['50 TL','40 TL','30 TL','60 TL'],d:1,cozum:{sonuc:'Doğru! %50 indirimde 40 TL.',adimlar:['%50 = yarısı demek','80 TL\'nin yarısı = 80 ÷ 2 = 40 TL indirim','Yeni fiyat: 80 - 40 = 40 TL','Veya doğrudan: 80 × 50 ÷ 100 = 40 TL']}},
+    {s:'Sınavda 50 sorudan 40\'ını doğru yaptın. Başarı yüzden kaç?',sec:['%40','%80','%50','%75'],d:1,cozum:{sonuc:'Doğru! 40/50 = %80.',adimlar:['Yüzde hesabı: (Doğru ÷ Toplam) × 100','(40 ÷ 50) × 100','= 0,8 × 100','= %80']}},
+    {s:'%10 kaça eşittir?',sec:['1/10 (onda bir)','1/100','1/2','10'],d:0,cozum:{sonuc:'Doğru! %10 = 1/10.',adimlar:['%10 → 100\'ün 10\'u → 10/100','10/100 sadeleştir: ikisini de 10\'a böl','10÷10 = 1, 100÷10 = 10','Sonuç: 1/10 = onda bir']}},
+    {s:'500 TL\'nin %20\'si kaç TL?',sec:['20 TL','100 TL','200 TL','50 TL'],d:1,cozum:{sonuc:'Doğru! 500 TL\'nin %20\'si = 100 TL.',adimlar:['500 × 20 ÷ 100','= 10000 ÷ 100','= 100 TL']}},
+    {s:'Maaşın %30\'unu kira, %20\'sini yemek için harcıyorsun. Toplam harcama yüzdesi kaç?',sec:['%10','%50','%60','%6'],d:1,cozum:{sonuc:'Doğru! %30 + %20 = %50.',adimlar:['Yüzde toplamada basitçe yüzdeleri topla:','Kira: %30','Yemek: %20','Toplam: %30 + %20 = %50','Yani maaşının yarısı bu iki kalemde gidiyor.']}}
+  ]
+},
+{
+  id:'d7',baslik:'Kesir, ondalık ve yüzde dönüşümleri',renk:'#EEEDFE',renk2:'#534AB7',
+  rozet:{id:'r7',ad:'Dönüşüm Uzmanı',acik:'Dönüşümler dersini tamamladın'},
+  anlatim:function(){
+    return '<div class="kart"><div class="bolum">'+
+      '<h3>Üç gösterim, tek değer</h3>'+
+      '<p>Kesir, ondalık ve yüzde — bunlar aynı değeri farklı biçimlerde ifade eder. Aralarında dönüşüm yapmak matematiğin temel becerilerinden biridir.</p>'+
+      '<div style="background:var(--bg2);border-radius:var(--rl);padding:1.25rem;margin:1rem 0">'+
+        '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">Kaydır — üç formu eş zamanlı gör</div>'+
+        '<input type="range" id="don-slider" min="0" max="100" value="50" style="width:100%" oninput="donSlider(this.value)">'+
+        '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px">'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:1rem;text-align:center">'+
+            '<div style="font-size:11px;color:var(--purple-text);margin-bottom:6px;font-weight:500">KESİR</div>'+
+            '<div id="don-kesir" style="font-size:22px;font-weight:500;color:#534AB7">1/2</div>'+
           '</div>'+
-          '<div style="margin-top:12px;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div id="don-bar" style="height:100%;background:#534AB7;border-radius:4px;transition:width .3s;width:50%"></div></div>'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:1rem;text-align:center">'+
+            '<div style="font-size:11px;color:var(--blue-text);margin-bottom:6px;font-weight:500">ONDALIKLı</div>'+
+            '<div id="don-ondalik" style="font-size:22px;font-weight:500;color:#185FA5">0,5</div>'+
+          '</div>'+
+          '<div style="background:var(--bg);border-radius:var(--r);padding:1rem;text-align:center">'+
+            '<div style="font-size:11px;color:var(--amber-text);margin-bottom:6px;font-weight:500">YÜZDE</div>'+
+            '<div id="don-yuzde" style="font-size:22px;font-weight:500;color:#854F0B">%50</div>'+
+          '</div>'+
         '</div>'+
-        '<div class="icerik-bolum"><h3>Dönüşüm kuralları</h3>'+
-          '<p><strong>Kesir → Ondalık:</strong> Payı paydaya böl. 3/4 → 3÷4 = 0,75</p>'+
-          '<p style="margin-top:6px"><strong>Ondalık → Yüzde:</strong> 100 ile çarp. 0,75 → %75</p>'+
-          '<p style="margin-top:6px"><strong>Yüzde → Kesir:</strong> 100&#39;ü payda yap. %75 → 75/100 = 3/4</p>'+
+        '<div style="margin-top:12px;height:8px;background:var(--border);border-radius:4px;overflow:hidden">'+
+          '<div id="don-bar" style="height:100%;background:#534AB7;border-radius:4px;transition:width .3s;width:50%"></div>'+
         '</div>'+
-        '<div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1.25rem;margin:1rem 0">'+
-          '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">Eşleştirme oyunu — aynı değerleri bul</div>'+
-          '<div id="eslestirme-alan"></div>'+
-        '</div>'+
-      '</div>';
-    },
-    kurulum: function(){
-      var donTablosu = {0:{kesir:'0',ondalik:'0,0',yuzde:'%0'},10:{kesir:'1/10',ondalik:'0,1',yuzde:'%10'},20:{kesir:'1/5',ondalik:'0,2',yuzde:'%20'},25:{kesir:'1/4',ondalik:'0,25',yuzde:'%25'},33:{kesir:'≈1/3',ondalik:'0,33',yuzde:'≈%33'},50:{kesir:'1/2',ondalik:'0,5',yuzde:'%50'},75:{kesir:'3/4',ondalik:'0,75',yuzde:'%75'},100:{kesir:'1',ondalik:'1,0',yuzde:'%100'}};
-      window.donSlider=function(v){
-        v=parseInt(v);
-        var en=Object.keys(donTablosu).reduce(function(a,b){return Math.abs(b-v)<Math.abs(a-v)?b:a;});
-        var d=donTablosu[en];
-        document.getElementById('don-kesir').textContent=d.kesir;
-        document.getElementById('don-ondalik').textContent=d.ondalik;
-        document.getElementById('don-yuzde').textContent=d.yuzde;
-        document.getElementById('don-bar').style.width=en+'%';
-      };
-      var pairs=[{sol:'1/4',sag:'%25',id:0},{sol:'0,5',sag:'1/2',id:1},{sol:'%75',sag:'0,75',id:2},{sol:'1/5',sag:'%20',id:3}];
-      var secilen=[];
-      function eslGuncelle(){
-        var tamamlanan=secilen.filter(function(s){return s.startsWith('t')});
-        var html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-        pairs.forEach(function(p){
-          var tamam=secilen.indexOf('t'+p.id)>=0;
-          var solSec=secilen.length===1&&secilen[0]==='s'+p.id;
-          var sagSec=secilen.length===1&&secilen[0]==='g'+p.id;
-          html+='<div onclick="eslTikla(&quot;s&quot;,p.id)" style="padding:10px;border-radius:var(--radius);border:0.5px solid '+(tamam?'var(--green)':solSec?'#185FA5':'var(--border2)')+';background:'+(tamam?'var(--green-bg)':solSec?'var(--blue-bg)':'var(--bg)')+';text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:'+(tamam?'var(--green-text)':solSec?'var(--blue-text)':'var(--text)')+'">'+p.sol+'</div>';
-          html+='<div onclick="eslTikla(&quot;g&quot;,p.id)" style="padding:10px;border-radius:var(--radius);border:0.5px solid '+(tamam?'var(--green)':sagSec?'#185FA5':'var(--border2)')+';background:'+(tamam?'var(--green-bg)':sagSec?'var(--blue-bg)':'var(--bg)')+';text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:'+(tamam?'var(--green-text)':sagSec?'var(--blue-text)':'var(--text)')+'">'+p.sag+'</div>';
-        });
-        html+='</div>';
-        if(tamamlanan.length===pairs.length) html+='<div style="text-align:center;color:var(--green-text);background:var(--green-bg);border-radius:var(--radius);padding:0.75rem;margin-top:10px;font-size:13px">✓ Tebrikler! Hepsini eşleştirdin!</div>';
-        document.getElementById('eslestirme-alan').innerHTML=html;
+      '</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Dönüşüm kuralları</h3>'+
+      '<div class="adim-kutu">Kesir → Ondalık: Payı paydaya böl\n3/4 → 3 ÷ 4 = 0,75</div>'+
+      '<div class="adim-kutu">Ondalık → Yüzde: 100 ile çarp\n0,75 → 0,75 × 100 = %75</div>'+
+      '<div class="adim-kutu">Yüzde → Kesir: Payda 100 yap, sadeleştir\n%75 → 75/100 → 3/4</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Bilmesi gereken dönüşümler</h3>'+
+      '<div id="donusumler-tablo" style="margin:1rem 0"></div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Eşleştirme oyunu</h3>'+
+      '<p>Aynı değeri gösteren kartları bul ve eşleştir:</p>'+
+      '<div id="eslestirme-alan"></div>'+
+    '</div></div>';
+  },
+  anlatimKurulum:function(){
+    var tablo={0:{k:'0',o:'0,0',y:'%0'},10:{k:'1/10',o:'0,1',y:'%10'},20:{k:'1/5',o:'0,2',y:'%20'},25:{k:'1/4',o:'0,25',y:'%25'},33:{k:'≈1/3',o:'0,33',y:'≈%33'},50:{k:'1/2',o:'0,5',y:'%50'},75:{k:'3/4',o:'0,75',y:'%75'},100:{k:'1',o:'1,0',y:'%100'}};
+    window.donSlider=function(v){
+      v=parseInt(v);
+      var en=Object.keys(tablo).reduce(function(a,b){return Math.abs(b-v)<Math.abs(a-v)?b:a;});
+      var d=tablo[en];
+      document.getElementById('don-kesir').textContent=d.k;
+      document.getElementById('don-ondalik').textContent=d.o;
+      document.getElementById('don-yuzde').textContent=d.y;
+      document.getElementById('don-bar').style.width=en+'%';
+    };
+    var satirlar=[{k:'1/4',o:'0,25',y:'%25'},{k:'1/2',o:'0,5',y:'%50'},{k:'3/4',o:'0,75',y:'%75'},{k:'1/5',o:'0,2',y:'%20'},{k:'1/10',o:'0,1',y:'%10'}];
+    var html='<table style="width:100%;border-collapse:collapse;font-size:13px;text-align:center"><tr style="background:var(--bg2)"><td style="padding:8px;border:0.5px solid var(--border);font-weight:500">Kesir</td><td style="padding:8px;border:0.5px solid var(--border);font-weight:500">Ondalık</td><td style="padding:8px;border:0.5px solid var(--border);font-weight:500">Yüzde</td></tr>';
+    satirlar.forEach(function(s){
+      html+='<tr><td style="padding:8px;border:0.5px solid var(--border);color:#534AB7;font-weight:500">'+s.k+'</td><td style="padding:8px;border:0.5px solid var(--border);color:#185FA5;font-weight:500">'+s.o+'</td><td style="padding:8px;border:0.5px solid var(--border);color:#854F0B;font-weight:500">'+s.y+'</td></tr>';
+    });
+    html+='</table>';
+    document.getElementById('donusumler-tablo').innerHTML=html;
+    var cifter=[{sol:'1/4',sag:'%25',id:0},{sol:'0,5',sag:'1/2',id:1},{sol:'%75',sag:'0,75',id:2},{sol:'1/5',sag:'%20',id:3}];
+    var secilen=[];
+    function eslGuncelle(){
+      var tam=secilen.filter(function(s){return s[0]==='t'});
+      var html2='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      cifter.forEach(function(p){
+        var t=secilen.indexOf('t'+p.id)>=0;
+        var ss=secilen.length===1&&secilen[0]==='s'+p.id;
+        var gs=secilen.length===1&&secilen[0]==='g'+p.id;
+        html2+='<div onclick="eslTikla(\'s\','+p.id+')" style="padding:10px;border-radius:var(--r);border:0.5px solid '+(t?'var(--green)':ss?'#185FA5':'var(--border2)')+';background:'+(t?'var(--green-bg)':ss?'var(--blue-bg)':'var(--bg)')+';text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:'+(t?'var(--green-text)':ss?'var(--blue-text)':'var(--text)')+'">'+p.sol+'</div>';
+        html2+='<div onclick="eslTikla(\'g\','+p.id+')" style="padding:10px;border-radius:var(--r);border:0.5px solid '+(t?'var(--green)':gs?'#185FA5':'var(--border2)')+';background:'+(t?'var(--green-bg)':gs?'var(--blue-bg)':'var(--bg)')+';text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:'+(t?'var(--green-text)':gs?'var(--blue-text)':'var(--text)')+'">'+p.sag+'</div>';
+      });
+      html2+='</div>';
+      if(tam.length===cifter.length) html2+='<div style="text-align:center;background:var(--green-bg);color:var(--green-text);border-radius:var(--r);padding:.75rem;margin-top:10px;font-size:13px;font-weight:500">Tebrikler! Hepsini eşleştirdin!</div>';
+      document.getElementById('eslestirme-alan').innerHTML=html2;
+    }
+    window.eslTikla=function(tip,pid){
+      var key=tip+pid;
+      if(secilen.indexOf('t'+pid)>=0)return;
+      if(secilen.length===0){secilen=[key];}
+      else if(secilen.length===1){
+        var prev=secilen[0];
+        if(parseInt(prev.slice(1))===pid&&prev[0]!==tip){
+          secilen.push('t'+pid);
+          setTimeout(function(){secilen=secilen.filter(function(s){return s[0]==='t';});eslGuncelle();},600);
+        }else{secilen=[key];}
       }
-      window.eslTikla=function(tip, pid){
-        var key = tip+pid;
-        var id=parseInt(pid);
-        if(secilen.indexOf('t'+id)>=0)return;
-        if(secilen.length===0){secilen=[key];}
-        else if(secilen.length===1){
-          var prev=secilen[0];
-          if(parseInt(prev.slice(1))===id&&prev[0]!==key[0]){
-            secilen.push('t'+id);
-            setTimeout(function(){secilen=secilen.filter(function(s){return s.startsWith('t')});eslGuncelle();},600);
-          } else {secilen=[key];}
-        }
-        eslGuncelle();
-      };
       eslGuncelle();
-    },
-    sorular:[
-      {s:'1/2 ondalık olarak nasıl yazılır?',sec:['0,12','0,5','2,1','5,0'],d:1,a:'✓ Doğru! 1 ÷ 2 = 0,5. Pay paydaya bölünür.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:12px;font-size:22px;font-weight:500;margin:1rem 0"><span style="color:#534AB7">1/2</span><span style="color:var(--text2)">→ 1 ÷ 2 =</span><span style="color:#185FA5">0,5</span></div>';}},
-      {s:'%25 kesir olarak nasıl yazılır?',sec:['25/10','1/4','2/5','25/1'],d:1,a:'✓ Doğru! %25 = 25/100 = 1/4. Payda 100 olur, sadeleştirilir.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#854F0B">%25</span><span style="color:var(--text2)">→</span><span style="color:var(--text2)">25/100</span><span style="color:var(--text2)">→</span><span style="color:#534AB7">1/4</span></div>';}},
-      {s:'0,75 yüzde olarak kaçtır?',sec:['%7,5','%750','%75','%0,75'],d:2,a:'✓ Doğru! 0,75 × 100 = %75.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#185FA5">0,75</span><span style="color:var(--text2)">× 100 =</span><span style="color:#854F0B">%75</span></div>';}},
-      {s:'3/4, 0,75 ve %75 hakkında ne söylenebilir?',sec:['Üçü de farklı değer','Üçü de aynı değeri gösterir','Sadece ikisi eşit','Hiçbiri eşit değil'],d:1,a:'✓ Doğru! 3/4 = 0,75 = %75. Farklı gösterim, aynı değer.',
-        interaktif:function(div){div.innerHTML='<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:1rem 0;text-align:center"><div style="background:var(--purple-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--purple-text);margin-bottom:4px">KESİR</div><div style="font-size:20px;font-weight:500;color:#534AB7">3/4</div></div><div style="background:var(--blue-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--blue-text);margin-bottom:4px">ONDALIKLİ</div><div style="font-size:20px;font-weight:500;color:#185FA5">0,75</div></div><div style="background:var(--amber-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--amber-text);margin-bottom:4px">YÜZDE</div><div style="font-size:20px;font-weight:500;color:#854F0B">%75</div></div></div><div style="text-align:center;font-size:13px;color:var(--text2)">Hepsi aynı değer</div>';}},
-      {s:'1/5 kaç yüzdedir?',sec:['%5','%15','%20','%50'],d:2,a:'✓ Doğru! 1 ÷ 5 = 0,2 → 0,2 × 100 = %20.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#534AB7">1/5</span><span style="color:var(--text2)">→</span><span style="color:#185FA5">0,2</span><span style="color:var(--text2)">→</span><span style="color:#854F0B">%20</span></div>';}}
-    
-      ,{s:'%50&#39;yi ondalıklı sayıya çevir.',sec:['50,0','5,0','0,5','0,05'],d:2,a:'✓ Doğru! Yüzdeyi 100&#39;e böl: 50 ÷ 100 = 0,5.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0"><span style="color:#854F0B">%50</span><span style="color:var(--text2)">÷ 100 =</span><span style="color:#185FA5">0,5</span></div>';}},
-      {s:'0,25 yüzde olarak kaçtır?',sec:['%2,5','%25','%250','%0,25'],d:1,a:'✓ Doğru! Ondalığı 100 ile çarp: 0,25 × 100 = %25.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0"><span style="color:#185FA5">0,25</span><span style="color:var(--text2)">× 100 =</span><span style="color:#854F0B">%25</span></div>';}},
-      {s:'1/4&#39;ü ondalıklı sayıya çevir.',sec:['0,14','4,0','0,25','2,5'],d:2,a:'✓ Doğru! 1 ÷ 4 = 0,25.',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:500;margin:1rem 0"><span style="color:#534AB7">1/4</span><span style="color:var(--text2)">→ 1÷4 =</span><span style="color:#185FA5">0,25</span></div>';}},
-      {s:'%75&#39;i kesre çevir ve sadeleştir.',sec:['75/10','7/5','3/4','75/1'],d:2,a:'✓ Doğru! %75 = 75/100 = 3/4 (her ikisi de 25&#39;e bölünür).',
-        interaktif:function(div){div.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:500;margin:1rem 0;flex-wrap:wrap"><span style="color:#854F0B">%75</span><span>→</span><div style="text-align:center"><div style="color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:2px">75</div><div style="color:#185FA5;padding-top:2px">100</div></div><span>÷25→</span><div style="text-align:center"><div style="color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:2px">3</div><div style="color:#185FA5;padding-top:2px">4</div></div></div>';}},
-      {s:'Hangisi 1/2, 0,5 ve %50&#39;nin ortak özelliğidir?',sec:['Hepsi farklı sayılar','Hepsi aynı değeri gösterir','Sadece ikisi eşit','Hiçbiri eşit değil'],d:1,a:'✓ Doğru! 1/2 = 0,5 = %50. Aynı değerin üç farklı gösterimi.',
-        interaktif:function(div){div.innerHTML='<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:1rem 0;text-align:center"><div style="background:var(--purple-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--purple-text);margin-bottom:4px">KESİR</div><div style="font-size:22px;font-weight:500;color:#534AB7">1/2</div></div><div style="background:var(--blue-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--blue-text);margin-bottom:4px">ONDALIKLİ</div><div style="font-size:22px;font-weight:500;color:#185FA5">0,5</div></div><div style="background:var(--amber-bg);border-radius:var(--radius);padding:0.75rem"><div style="font-size:11px;color:var(--amber-text);margin-bottom:4px">YÜZDE</div><div style="font-size:22px;font-weight:500;color:#854F0B">%50</div></div></div><div style="text-align:center;font-size:13px;color:var(--green-text);background:var(--green-bg);border-radius:var(--radius);padding:6px">Üçü de aynı değer ✓</div>';}}
-
-    ]
-  }
+    };
+    eslGuncelle();
+  },
+  sorular:[
+    {s:'1/2 ondalık olarak nasıl yazılır?',sec:['0,12','0,5','2,1','5,0'],d:1,cozum:{sonuc:'Doğru! 1/2 = 0,5.',adimlar:['Kesir → Ondalık dönüşümü: Pay ÷ Payda','1 ÷ 2 = 0,5','Kontrol: 0,5 × 2 = 1 ✓']}},
+    {s:'%25 kesir olarak nasıl yazılır?',sec:['25/10','1/4','2/5','25/1'],d:1,cozum:{sonuc:'Doğru! %25 = 1/4.',adimlar:['Yüzde → Kesir: Paydayı 100 yap','%25 → 25/100','Sadeleştir: pay ve payda 25\'e bölünür','25÷25=1, 100÷25=4 → 1/4']}},
+    {s:'0,75 yüzde olarak kaçtır?',sec:['%7,5','%750','%75','%0,75'],d:2,cozum:{sonuc:'Doğru! 0,75 = %75.',adimlar:['Ondalık → Yüzde: 100 ile çarp','0,75 × 100 = 75','Yüzde işareti ekle: %75']}},
+    {s:'3/4 ondalık olarak kaçtır?',sec:['0,34','0,43','0,75','0,25'],d:2,cozum:{sonuc:'Doğru! 3/4 = 0,75.',adimlar:['Kesir → Ondalık: Pay ÷ Payda','3 ÷ 4 = ?','4 × 0,75 = 3 → doğru','3 ÷ 4 = 0,75']}},
+    {s:'%20 ondalık olarak kaçtır?',sec:['2,0','0,02','0,2','20,0'],d:2,cozum:{sonuc:'Doğru! %20 = 0,2.',adimlar:['Yüzde → Ondalık: 100\'e böl','%20 → 20 ÷ 100 = 0,2','Kontrol: 0,2 × 100 = 20 = %20 ✓']}},
+    {s:'1/5 yüzde olarak kaçtır?',sec:['%5','%15','%20','%50'],d:2,cozum:{sonuc:'Doğru! 1/5 = %20.',adimlar:['Kesir → Ondalık → Yüzde yolu:','1 ÷ 5 = 0,2','0,2 × 100 = 20','Sonuç: %20']}},
+    {s:'0,1 yüzde olarak kaçtır?',sec:['%1','%10','%100','%0,1'],d:1,cozum:{sonuc:'Doğru! 0,1 = %10.',adimlar:['Ondalık → Yüzde: 100 ile çarp','0,1 × 100 = 10','Yüzde işareti: %10']}},
+    {s:'%50\'yi ondalık sayıya çevir.',sec:['50,0','5,0','0,5','0,05'],d:2,cozum:{sonuc:'Doğru! %50 = 0,5.',adimlar:['Yüzde → Ondalık: 100\'e böl','50 ÷ 100 = 0,5','Kontrol: 0,5 × 100 = 50 = %50 ✓']}},
+    {s:'%75\'i kesre çevir ve sadeleştir.',sec:['75/10','7/5','3/4','75/1'],d:2,cozum:{sonuc:'Doğru! %75 = 3/4.',adimlar:['%75 → 75/100','Sadeleştir: 75 ve 100 ikisi de 25\'e bölünür','75 ÷ 25 = 3','100 ÷ 25 = 4','Sonuç: 3/4']}},
+    {s:'3/4, 0,75 ve %75 hakkında hangisi doğrudur?',sec:['Üçü farklı değer','Üçü aynı değeri gösterir','Sadece ikisi eşit','Hiçbiri eşit değil'],d:1,cozum:{sonuc:'Doğru! Üçü de aynı değeri gösterir.',adimlar:['3/4 → 3 ÷ 4 = 0,75','0,75 → 0,75 × 100 = %75','%75 → 75/100 = 3/4','Üçü de birbirinin dönüşümü: 3/4 = 0,75 = %75']}}
+  ]
+}
 ];
 
-var aktifKullanici = null;
-var ilerlemeVerisi = [];
-var aktifDers = null;
-var quizSoru = 0, quizDogru = 0;
+/* ========== DURUM ========== */
+var aktifKullanici=null,ilerleme=[],aktifDers=null,quizSoru=0,quizDogru=0,quizNokta=[];
 
-function ekranGoster(id){
-  document.querySelectorAll('.ekran').forEach(function(e){ e.classList.remove('aktif'); });
-  document.getElementById(id).classList.add('aktif');
-  if(id==='ekran-anasayfa') anaSayfaGuncelle();
-  if(id==='ekran-istatistik') istatGuncelle();
-}
-
-function girisYap(){
-  var ad = document.getElementById('kullanici-adi-input').value.trim();
-  if(!ad){ 
-    document.getElementById('giris-hata').style.display='block';
-    document.getElementById('giris-hata').textContent='Lütfen adını yaz.';
-    return; 
-  }
-  aktifKullanici = ad;
-  document.getElementById('hosgeldin-isim').textContent = ad;
-  document.getElementById('giris-hata').style.display='none';
-  ekranGoster('ekran-anasayfa');
-  ilerlemeyiYukle();
-}
-
-function cikisYap(){
-  aktifKullanici = null;
-  ilerlemeVerisi = [];
-  document.getElementById('kullanici-adi-input').value = '';
-  ekranGoster('ekran-giris');
-}
-
-function ilerlemeyiYukle(){
-  document.getElementById('yukleniyor-dersleri').style.display='block';
-  document.getElementById('ders-listesi').innerHTML='';
-  sb.from('ilerleme').select('*').eq('kullanici_adi', aktifKullanici)
-    .then(function(res){
-      ilerlemeVerisi = (res && res.data) ? res.data : [];
-      document.getElementById('yukleniyor-dersleri').style.display='none';
+/* ========== SUPABASE ========== */
+function yukle(){
+  document.getElementById('yukleniyor').style.display='block';
+  sb.from('ilerleme').select('*').eq('kullanici_adi',aktifKullanici)
+    .then(function(r){
+      ilerleme=(r&&r.data)?r.data:[];
+      document.getElementById('yukleniyor').style.display='none';
       anaSayfaGuncelle();
-    })
-    .catch(function(e){
-      ilerlemeVerisi = [];
-      document.getElementById('yukleniyor-dersleri').style.display='none';
+    }).catch(function(){
+      ilerleme=[];
+      document.getElementById('yukleniyor').style.display='none';
       anaSayfaGuncelle();
     });
 }
+function kaydet(dersId,dogru){
+  sb.from('ilerleme').upsert({
+    kullanici_adi:aktifKullanici,ders_id:dersId,
+    tamamlandi:true,skor:dogru,tarih:new Date().toISOString()
+  },{onConflict:'kullanici_adi,ders_id'})
+  .then(function(){yukle();}).catch(function(){});
+}
+function tamamlandiMi(id){return ilerleme.some(function(r){return r.ders_id===id&&r.tamamlandi;});}
+function toplamDogru(){return ilerleme.reduce(function(t,r){return t+(r.skor||0);},0);}
 
-function dersTamamlandiMi(dersId){
-  return ilerlemeVerisi.some(function(r){ return r.ders_id===dersId && r.tamamlandi; });
+/* ========== NAVİGASYON ========== */
+function ekranGoster(id){
+  document.querySelectorAll('.ekran').forEach(function(e){e.classList.remove('aktif');});
+  document.getElementById(id).classList.add('aktif');
+  if(id==='ekran-anasayfa')anaSayfaGuncelle();
+  if(id==='ekran-istatistik')istatGuncelle();
+}
+function girisYap(){
+  var ad=document.getElementById('isim-input').value.trim();
+  if(!ad){
+    document.getElementById('giris-hata').style.display='block';
+    document.getElementById('giris-hata').textContent='Lütfen adını yaz.';
+    return;
+  }
+  aktifKullanici=ad;
+  document.getElementById('hosgeldin').textContent=ad;
+  document.getElementById('giris-hata').style.display='none';
+  ekranGoster('ekran-anasayfa');
+  yukle();
+}
+function cikisYap(){
+  aktifKullanici=null;ilerleme=[];
+  document.getElementById('isim-input').value='';
+  ekranGoster('ekran-giris');
 }
 
-function toplamDogruSayisi(){
-  return ilerlemeVerisi.reduce(function(t,r){ return t+(r.skor||0); }, 0);
-}
-
+/* ========== ANA SAYFA ========== */
 function anaSayfaGuncelle(){
-  if(!aktifKullanici) return;
-  var tam = DERSLER.filter(function(d){ return dersTamamlandiMi(d.id); }).length;
-  var pct = Math.round((tam/DERSLER.length)*100);
-  document.getElementById('genel-pct').textContent = pct+'%';
-  document.getElementById('genel-bar').style.width = pct+'%';
-  var liste = document.getElementById('ders-listesi');
-  liste.innerHTML = '';
-  DERSLER.forEach(function(d, i){
-    var tamam = dersTamamlandiMi(d.id);
-    var kilitli = i>0 && !dersTamamlandiMi(DERSLER[i-1].id);
-    var div = document.createElement('div');
-    div.className = 'ders-kart'+(tamam?' tamamlandi':'')+(kilitli?' kilitli':'');
-    div.innerHTML = '<div class="ders-no" style="background:'+d.renk+';color:'+d.renk2+'">'+(tamam?'✓':(i+1))+'</div>'+
+  if(!aktifKullanici)return;
+  var tam=DERSLER.filter(function(d){return tamamlandiMi(d.id);}).length;
+  var pct=Math.round(tam/DERSLER.length*100);
+  document.getElementById('genel-pct').textContent=pct+'%';
+  document.getElementById('genel-bar').style.width=pct+'%';
+  var liste=document.getElementById('ders-listesi');
+  liste.innerHTML='';
+  DERSLER.forEach(function(d,i){
+    var tamam=tamamlandiMi(d.id);
+    var kilitli=i>0&&!tamamlandiMi(DERSLER[i-1].id);
+    var div=document.createElement('div');
+    div.className='ders-kart'+(tamam?' tamamlandi':'')+(kilitli?' kilitli':'');
+    div.innerHTML=
+      '<div class="ders-no" style="background:'+d.renk+';color:'+d.renk2+'">'+(tamam?'✓':(i+1))+'</div>'+
       '<div style="flex:1"><div style="font-size:14px;font-weight:500;margin-bottom:2px">'+d.baslik+'</div>'+
       '<div style="font-size:12px;color:var(--text2)">'+d.sorular.length+' soru · '+(tamam?'Tamamlandı':'Bekliyor')+'</div></div>'+
       (kilitli?'<span style="font-size:12px;color:var(--text3)">Kilitli</span>':
        tamam?'<span class="badge badge-green">Tekrar</span>':'<span class="badge badge-blue">Başla</span>');
-    if(!kilitli) div.onclick = function(){ dersiAc(d); };
+    if(!kilitli)div.onclick=function(){dersAc(d);};
     liste.appendChild(div);
   });
 }
 
-function dersiAc(ders){
-  aktifDers = ders;
-  document.getElementById('ders-baslik-nav').textContent = ders.baslik;
-  document.getElementById('ders-icerik').innerHTML = ders.icerik();
+/* ========== DERS (ANLATIM) ========== */
+function dersAc(ders){
+  aktifDers=ders;
+  document.getElementById('ders-nav-baslik').textContent=ders.baslik;
+  document.getElementById('ders-icerik').innerHTML=ders.anlatim();
   ekranGoster('ekran-ders');
-  setTimeout(function(){ if(ders.kurulum) ders.kurulum(); }, 100);
+  setTimeout(function(){if(ders.anlatimKurulum)ders.anlatimKurulum();},100);
 }
 
-function dersQuizBaslat(){
-  if(!aktifDers) return;
-  quizSoru = 0; quizDogru = 0;
-  document.getElementById('quiz-baslik-nav').textContent = aktifDers.baslik;
+/* ========== QUIZ ========== */
+function quizBaslat(){
+  if(!aktifDers)return;
+  quizSoru=0;quizDogru=0;quizNokta=new Array(aktifDers.sorular.length).fill('');
+  document.getElementById('quiz-nav-baslik').textContent=aktifDers.baslik;
   ekranGoster('ekran-quiz');
   soruGoster();
 }
-
 function soruGoster(){
-  var sorular = aktifDers.sorular;
-  var alan = document.getElementById('quiz-icerik');
-  if(quizSoru >= sorular.length){ quizBitti(); return; }
-  var q = sorular[quizSoru];
-  var noktalar = sorular.map(function(_,i){
-    return '<div class="quiz-nokta'+(i<quizSoru?' bitti':i===quizSoru?' aktif':'')+'"></div>';
+  var q=aktifDers.sorular[quizSoru];
+  if(!q){quizBitti();return;}
+  var noktaHtml=quizNokta.map(function(n,i){
+    var cls='quiz-nokta'+(i===quizSoru?' aktif':n==='d'?' dogru-nokta':n==='y'?' yanlis-nokta':'');
+    return '<div class="'+cls+'"></div>';
   }).join('');
-  alan.innerHTML = '<div class="quiz-ilerleme">'+noktalar+'</div>'+
+  var html='<div class="quiz-ilerleme">'+noktaHtml+'</div>'+
     '<div class="kart">'+
-    '<div style="font-size:14px;font-weight:500;margin-bottom:1rem">'+q.s+'</div>'+
-    '<div id="secenekler">'+q.sec.map(function(s,i){
-      return '<button class="secenek-btn" onclick="cevapla(this,'+i+')">'+s+'</button>';
-    }).join('')+'</div>'+
-    '<div id="geri" style="display:none"></div>'+
-    '<div id="quiz-interaktif" style="display:none;margin-top:12px"></div>'+
-    '<div id="devam-wrap" style="display:none;margin-top:14px"><button class="btn btn-primary btn-block" onclick="devamEt()">Sonraki Soru →</button></div>'+
-    '</div>'+
-    '<div style="font-size:12px;color:var(--text2);text-align:right;margin-top:6px">Soru '+(quizSoru+1)+' / '+sorular.length+'</div>';
+      '<div style="font-size:13px;color:var(--text2);margin-bottom:8px">Soru '+(quizSoru+1)+' / '+aktifDers.sorular.length+'</div>'+
+      '<div style="font-size:15px;font-weight:500;margin-bottom:1.25rem;line-height:1.5">'+q.s+'</div>'+
+      '<div id="secenekler">'+
+        q.sec.map(function(s,i){
+          return '<button class="secenek-btn" onclick="cevapla(this,'+i+')">'+s+'</button>';
+        }).join('')+
+      '</div>'+
+      '<div class="cozum-kutu" id="cozum-kutu"></div>'+
+      '<button class="btn btn-primary btn-block" id="devam-btn" style="display:none;margin-top:14px" onclick="devamEt()"></button>'+
+    '</div>';
+  document.getElementById('quiz-icerik').innerHTML=html;
 }
-
-function cevapla(el, secilen){
-  var q = aktifDers.sorular[quizSoru];
-  document.querySelectorAll('.secenek-btn').forEach(function(b){ b.disabled=true; });
-  var geri = document.getElementById('geri');
-  geri.style.display = 'block';
-  geri.className = 'geri-bildirim';
-  if(secilen === q.d){
+function cevapla(el,secilen){
+  var q=aktifDers.sorular[quizSoru];
+  document.querySelectorAll('.secenek-btn').forEach(function(b){b.disabled=true;});
+  var dogru=secilen===q.d;
+  if(dogru){
     el.classList.add('dogru');
-    geri.classList.add('dogru');
-    geri.textContent = q.a;
-    quizDogru++;
+    quizDogru++;quizNokta[quizSoru]='d';
   } else {
     el.classList.add('yanlis');
     document.querySelectorAll('.secenek-btn')[q.d].classList.add('dogru');
-    geri.classList.add('yanlis');
-    geri.textContent = 'Yanlış. '+q.a;
+    quizNokta[quizSoru]='y';
   }
-  if(q.interaktif){
-    var intDiv = document.getElementById('quiz-interaktif');
-    if(intDiv){ intDiv.style.display='block'; q.interaktif(intDiv); }
-  }
-  var wrap = document.getElementById('devam-wrap');
-  if(wrap){
-    var btn = wrap.querySelector('button');
-    btn.textContent = quizSoru+1 >= aktifDers.sorular.length ? 'Sonucu Gör →' : 'Sonraki Soru →';
-    wrap.style.display = 'block';
-  }
+  var kutu=document.getElementById('cozum-kutu');
+  kutu.style.display='block';
+  kutu.className='cozum-kutu '+(dogru?'dogru-cozum':'yanlis-cozum');
+  var icerik='<div style="font-weight:500;margin-bottom:8px">'+(dogru?'✓ ':'✗ ')+q.cozum.sonuc+'</div>';
+  icerik+='<div style="font-size:12px;font-weight:500;margin-bottom:4px;opacity:.7">ADIM ADIM ÇÖZÜM:</div>';
+  q.cozum.adimlar.forEach(function(a,i){
+    icerik+='<div class="cozum-adim"><span style="opacity:.6;margin-right:6px">'+(i+1)+'.</span>'+a+'</div>';
+  });
+  kutu.innerHTML=icerik;
+  var btn=document.getElementById('devam-btn');
+  btn.style.display='block';
+  btn.textContent=quizSoru+1>=aktifDers.sorular.length?'Sonucu Gör →':'Sonraki Soru →';
 }
-
-function devamEt(){ quizSoru++; soruGoster(); }
-
+function devamEt(){quizSoru++;soruGoster();}
 function quizBitti(){
-  var toplam = aktifDers.sorular.length;
-  var pct = Math.round((quizDogru/toplam)*100);
-
-  sb.from('ilerleme').upsert({
-    kullanici_adi: aktifKullanici,
-    ders_id: aktifDers.id,
-    tamamlandi: true,
-    skor: quizDogru,
-    tarih: new Date().toISOString()
-  }, { onConflict: 'kullanici_adi,ders_id' })
-  .then(function(){ ilerlemeyiYukle(); })
-  .catch(function(){});
-
-  var daire = document.getElementById('sonuc-daire');
-  daire.style.background = pct>=70?'var(--green-bg)':'var(--red-bg)';
-  document.getElementById('sonuc-sayi').style.color = pct>=70?'var(--green-text)':'var(--red-text)';
-  document.getElementById('sonuc-sayi').textContent = quizDogru+'/'+toplam;
-  document.getElementById('sonuc-alt').textContent = pct+'%';
-  document.getElementById('sonuc-alt').style.color = pct>=70?'var(--green)':'var(--red)';
-  document.getElementById('sonuc-baslik').textContent = pct>=80?'Mükemmel!':pct>=60?'İyi iş!':'Tekrar dene';
-  document.getElementById('sonuc-metin').textContent = pct>=70?aktifDers.baslik+' dersini başarıyla tamamladın.':'Bazı konuları tekrar gözden geçirebilirsin.';
-  document.getElementById('sonuc-rozet-alan').innerHTML = '<span class="rozet-kazanildi">'+aktifDers.rozet.ad+' rozeti kazanıldı</span>';
-  var idx = DERSLER.findIndex(function(d){ return d.id===aktifDers.id; });
-  var btn = document.getElementById('sonuc-sonraki-btn');
-  if(idx < DERSLER.length-1){ btn.style.display=''; btn.onclick=function(){ dersiAc(DERSLER[idx+1]); }; }
-  else { btn.style.display='none'; }
+  var toplam=aktifDers.sorular.length;
+  var pct=Math.round(quizDogru/toplam*100);
+  kaydet(aktifDers.id,quizDogru);
+  var daire=document.getElementById('sonuc-daire');
+  daire.style.background=pct>=70?'var(--green-bg)':'var(--red-bg)';
+  document.getElementById('sonuc-sayi').style.color=pct>=70?'var(--green-text)':'var(--red-text)';
+  document.getElementById('sonuc-sayi').textContent=quizDogru+'/'+toplam;
+  document.getElementById('sonuc-alt').textContent=pct+'%';
+  document.getElementById('sonuc-alt').style.color=pct>=70?'var(--green)':'var(--red)';
+  document.getElementById('sonuc-baslik').textContent=pct>=80?'Mükemmel!':pct>=60?'İyi iş!':'Tekrar dene';
+  document.getElementById('sonuc-metin').textContent=pct>=70?aktifDers.baslik+' dersini başarıyla tamamladın.':'Bazı konuları ders anlatımından tekrar inceleyebilirsin.';
+  document.getElementById('sonuc-rozet').innerHTML='<span class="rozet-kazanildi">'+aktifDers.rozet.ad+' rozeti kazanıldı</span>';
+  var idx=DERSLER.findIndex(function(d){return d.id===aktifDers.id;});
+  var btn=document.getElementById('sonraki-btn');
+  if(idx<DERSLER.length-1){btn.style.display='';btn.onclick=function(){dersAc(DERSLER[idx+1]);};}
+  else{btn.style.display='none';}
   ekranGoster('ekran-sonuc');
 }
 
+/* ========== İSTATİSTİK ========== */
 function istatGuncelle(){
-  var tam = DERSLER.filter(function(d){ return dersTamamlandiMi(d.id); }).length;
-  document.getElementById('is-tamamlanan').textContent = tam;
-  document.getElementById('is-dogru').textContent = toplamDogruSayisi();
-  document.getElementById('is-rozet').textContent = tam;
-  var alan = document.getElementById('rozet-listesi');
-  alan.innerHTML = DERSLER.map(function(d){
-    var k = dersTamamlandiMi(d.id);
+  var tam=DERSLER.filter(function(d){return tamamlandiMi(d.id);}).length;
+  document.getElementById('is-tam').textContent=tam;
+  document.getElementById('is-dogru').textContent=toplamDogru();
+  document.getElementById('is-rozet').textContent=tam;
+  document.getElementById('rozet-listesi').innerHTML=DERSLER.map(function(d){
+    var k=tamamlandiMi(d.id);
     return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)">'+
       '<div><div style="font-size:13px;font-weight:500">'+d.rozet.ad+'</div>'+
       '<div style="font-size:12px;color:var(--text2)">'+d.rozet.acik+'</div></div>'+
-      (k?'<span class="rozet-kazanildi">Kazanıldı</span>':'<span class="rozet-kilitli">Kilitli</span>')+'</div>';
+      (k?'<span class="rozet-kazanildi">Kazanıldı</span>':'<span class="rozet-kilitli">Kilitli</span>')+
+    '</div>';
   }).join('');
 }
 
-function bsAc(baslik, acik){ 
-  document.getElementById('bs-acik').textContent = baslik+': '+acik; 
+/* ========== ANLATIM YARDIMCI ========== */
+function termGuncelle(v){
+  v=parseInt(v);
+  if(!document.getElementById('term-ic'))return;
+  var pct=((v+20)/70)*100;
+  document.getElementById('term-ic').style.height=Math.max(4,pct)+'%';
+  document.getElementById('term-ic').style.background=v<0?'#378ADD':v<20?'#1D9E75':v<37?'#BA7517':'#E24B4A';
+  var m=v<0?v+'°C: Sıfırın altı. Negatif sıcaklık. Buz oluşabilir.':
+         v===0?'0°C: Tam donma noktası. Ne pozitif ne negatif.':
+         v<20?v+'°C: Pozitif. Sıfırın '+v+' derece üstü.':
+         v<37?v+'°C: Güzel hava!':v+'°C: Vücut ısısı seviyesi.';
+  if(document.getElementById('term-acik')) document.getElementById('term-acik').textContent=m;
 }
-window.bsAc = bsAc;
 </script>
 </body>
 </html>
