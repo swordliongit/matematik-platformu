@@ -776,7 +776,7 @@ function soruGoster(){
     }).join('')+'</div>'+
     '<div id="geri" style="display:none"></div>'+
     '<div id="quiz-interaktif" style="display:none;margin-top:12px"></div>'+
-    '<button id="devam-btn" class="btn btn-primary btn-block" style="display:none;margin-top:14px"></button>'+
+    '<div id="devam-wrap" style="display:none;margin-top:14px"><button class="btn btn-primary btn-block" onclick="devamEt()">Sonraki Soru →</button></div>'+
     '</div>'+
     '<div style="font-size:12px;color:var(--text2);text-align:right;margin-top:6px">Soru '+(quizSoru+1)+' / '+sorular.length+'</div>';
 }
@@ -802,13 +802,15 @@ function cevapla(el, secilen){
     var intDiv = document.getElementById('quiz-interaktif');
     if(intDiv){ intDiv.style.display='block'; q.interaktif(intDiv); }
   }
-  var devamBtn = document.getElementById('devam-btn');
-  if(devamBtn){
-    devamBtn.style.display='block';
-    devamBtn.textContent = quizSoru+1 >= aktifDers.sorular.length ? 'Sonucu Gör →' : 'Sonraki Soru →';
-    devamBtn.onclick = function(){ quizSoru++; soruGoster(); };
+  var wrap = document.getElementById('devam-wrap');
+  if(wrap){
+    var btn = wrap.querySelector('button');
+    btn.textContent = quizSoru+1 >= aktifDers.sorular.length ? 'Sonucu Gör →' : 'Sonraki Soru →';
+    wrap.style.display = 'block';
   }
 }
+
+function devamEt(){ quizSoru++; soruGoster(); }
 
 function quizBitti(){
   var toplam = aktifDers.sorular.length;
