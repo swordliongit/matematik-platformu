@@ -1299,7 +1299,7 @@ function anaSayfaGuncelle(){
   liste.innerHTML='';
   DERSLER.forEach(function(d,i){
     var tamam=tamamlandiMi(d.id);
-    var kilitli=i>0&&!tamamlandiMi(DERSLER[i-1].id);
+    var kilitli=false;
     var div=document.createElement('div');
     div.className='ders-kart'+(tamam?' tamamlandi':'')+(kilitli?' kilitli':'');
     div.innerHTML=
