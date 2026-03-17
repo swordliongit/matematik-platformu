@@ -212,6 +212,12 @@ var DERSLER=[
       '<p>Sıfırın sağındaki sayılar ise <strong>pozitif</strong> sayılardır. Genellikle işaret koyulmaz ama +5 de yazılabilir.</p>'+
     '</div>'+
     '<div class="bolum">'+
+      '<h3>Sayı doğrusunda toplama ve çıkarma</h3>'+
+      '<p>Sayı doğrusunu kullanarak toplama ve çıkarma yapabiliriz:</p>'+
+      '<div class="adim-kutu">Toplama → sağa git<br>Çıkarma → sola git<br>Negatif sayı ekleme → sola git</div>'+
+      '<div class="ornek-kutu">-3 + 5 = ? → -3&#39;ten başla, 5 adım sağa git → 2</div>'+
+      '<div class="ornek-kutu">2 - 7 = ? → 2&#39;den başla, 7 adım sola git → -5</div>'+
+    '</div>'+    '<div class="bolum">'+
       '<h3>Termometre: negatif sayı pratiği</h3>'+
       '<p>Termometreyi sürükle, sıcaklığın sayı doğrusunda nerede durduğunu gör.</p>'+
       '<div style="display:flex;align-items:center;gap:16px;margin:1rem 0">'+
@@ -432,6 +438,12 @@ var DERSLER=[
       '</div>'+
     '</div>'+
     '<div class="bolum">'+
+      '<h3>Sayıları okuma ve yazma</h3>'+
+      '<p>Basamakları öğrendik, şimdi sayıları doğru okuyalım:</p>'+
+      '<div class="adim-kutu">Her basamağı soldan sağa oku, değerini söyle:<br>3752 → "üç bin yedi yüz elli iki"</div>'+
+      '<div class="ornek-kutu">1000 → "bin"<br>2500 → "iki bin beş yüz"<br>10000 → "on bin"<br>100000 → "yüz bin"</div>'+
+      '<div class="bilgi-kutu">Dikkat: 0 olan basamakları okuma! 3050 → "üç bin elli" (yüz yok)</div>'+
+    '</div>'+    '<div class="bolum">'+
       '<h3>Büyük sayılarda basamak</h3>'+
       '<p>Basamaklar soldan sağa büyükten küçüğe gider:</p>'+
       '<div style="overflow-x:auto;margin:1rem 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:center">'+
@@ -675,6 +687,12 @@ var DERSLER=[
       '<div class="adim-kutu">Kural: Sayı doğrusunda sola gidince küçülür, sağa gidince büyür.</div>'+
     '</div>'+
     '<div class="bolum">'+
+      '<h3>Tam sayılarda toplama ve çıkarma</h3>'+
+      '<p>Negatif sayılarla işlem yaparken şu kuralları kullan:</p>'+
+      '<div class="adim-kutu">+ ile + → topla, sonuç pozitif: 3 + 4 = 7<br>- ile - → topla, sonuç negatif: -3 + (-4) = -7<br>+ ile - → farkı al, büyüğün işareti: 5 + (-3) = 2<br>Çıkarma = ters işaret ekle: 5 - (-3) = 5 + 3 = 8</div>'+
+      '<div class="ornek-kutu">Banka örneği: 200 TL var, 350 TL harcadı → 200 - 350 = -150 TL (borç)</div>'+
+      '<div class="ornek-kutu">Sıcaklık: -5°C iken 12 derece arttı → -5 + 12 = 7°C</div>'+
+    '</div>'+    '<div class="bolum">'+
       '<h3>Gerçek hayat: kâr ve zarar</h3>'+
       '<p>İşletmelerde pozitif ve negatif sayılar kâr-zarar hesabında kullanılır:</p>'+
       '<div id="kar-zarar-grafik" style="margin:1rem 0"></div>'+
@@ -749,6 +767,28 @@ var DERSLER=[
       '<div class="ornek-kutu">🍕 Pizzanın 2/3\'ü yendi = üçte ikisi bitti</div>'+
     '</div>'+
     '<div class="bolum">'+
+      '<h3>Eşdeğer kesirler</h3>'+
+      '<p>Aynı miktarı farklı şekillerde gösteren kesirlere <strong>eşdeğer kesir</strong> denir. Bir kesrin payını ve paydasını aynı sayıyla çarparsak değeri değişmez.</p>'+
+      '<div class="adim-kutu">1/2 = 2/4 = 3/6 = 4/8 → Hepsi aynı miktarı gösterir: yarım</div>'+
+      '<div class="ornek-kutu">Nasıl buluruz? Pay ve paydayı aynı sayıyla çarp:<br>1/2 → pay×2=2, payda×2=4 → 2/4<br>1/2 → pay×3=3, payda×3=6 → 3/6</div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Sadeleştirme nedir?</h3>'+
+      '<p>Bir kesri daha sade hale getirmek için pay ve paydayı <strong>aynı sayıya bölme</strong> işlemine <strong>sadeleştirme</strong> denir. Değer değişmez, sadece daha basit görünür.</p>'+
+      '<div class="adim-kutu" style="background:var(--bg2);border-left-color:#185FA5;color:var(--text)"><strong style="color:#185FA5">3 adımda sadeleştirme:</strong><br>1. Her ikisini de bölebileceğin bir sayı bul → buna ortak bölen denir<br>2. Pay ve paydayı o sayıya böl<br>3. Ortak bölen kalmayınca dur → en sade hâl</div>'+
+      '<div id="sadeles-demo" style="margin:1.25rem 0"></div>'+
+    '</div>'+
+    '<div class="bolum">'+
+      '<h3>Ne zamana kadar sadeleştiririz?</h3>'+
+      '<p>Pay ve paydanın <strong>1 dışında ortak böleni kalmayınca</strong> durursun. Bu noktaya <strong>en sade hâl</strong> denir.</p>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;margin:1rem 0">'+
+        '<div style="background:var(--bg2);border-radius:var(--r);padding:.7rem 1rem;font-size:13px;border-left:3px solid #993C1D"><span style="color:#993C1D;font-weight:500">4/6</span> → ÷2 → <span style="color:#993C1D;font-weight:500">2/3</span> → 2 ve 3 artık bölünemez → <span style="color:var(--green);font-weight:500">✓ En sade: 2/3</span></div>'+
+        '<div style="background:var(--bg2);border-radius:var(--r);padding:.7rem 1rem;font-size:13px;border-left:3px solid #993C1D"><span style="color:#993C1D;font-weight:500">12/18</span> → ÷6 → <span style="color:var(--green);font-weight:500">✓ En sade: 2/3</span></div>'+
+        '<div style="background:var(--bg2);border-radius:var(--r);padding:.7rem 1rem;font-size:13px;border-left:3px solid #993C1D"><span style="color:#993C1D;font-weight:500">8/12</span> → ÷4 → <span style="color:var(--green);font-weight:500">✓ En sade: 2/3</span></div>'+
+      '</div>'+
+      '<div class="bilgi-kutu">4/6, 12/18 ve 8/12 → hepsi aynı değer: 2/3. Farklı görünümler, eşdeğer kesirler.</div>'+
+    '</div>'+
+    '<div class="bolum">'+
       '<h3>Kesir büyüklük karşılaştırması</h3>'+
       '<p>Aynı paydaya sahip kesirlerde pay büyükse kesir büyüktür. Aynı paya sahipse payda küçükse kesir büyüktür.</p>'+
       '<div id="kesir-bar" style="margin:1rem 0"></div>'+
@@ -789,6 +829,76 @@ var DERSLER=[
       toplam=s[(idx+1)%s.length];dilim=Math.max(1,Math.floor(toplam/2));pizzaCiz();
     };
     pizzaCiz();
+    // Sadeleştirme interaktif demo
+    var sadelesKesirler=[
+      {pay:6,payda:8,adimlar:[{boler:2,yeniPay:3,yeniPayda:4,acik:'6 ve 8&#39;in ikisi de 2&#39;ye bölünür'}]},
+      {pay:4,payda:6,adimlar:[{boler:2,yeniPay:2,yeniPayda:3,acik:'4 ve 6&#39;nın ikisi de 2&#39;ye bölünür'}]},
+      {pay:9,payda:12,adimlar:[{boler:3,yeniPay:3,yeniPayda:4,acik:'9 ve 12&#39;nin ikisi de 3&#39;e bölünür'}]},
+      {pay:10,payda:15,adimlar:[{boler:5,yeniPay:2,yeniPayda:3,acik:'10 ve 15&#39;in ikisi de 5&#39;e bölünür'}]},
+    ];
+    var sadeIdx=0;
+    function sadeGoster(){
+      var demo=document.getElementById('sadeles-demo');
+      if(!demo)return;
+      var k=sadelesKesirler[sadeIdx];
+      var a=k.adimlar[0];
+      demo.innerHTML=
+        '<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin:0">'+
+          '<div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-weight:500">ADIM ADIM DENE — Örnek '+(sadeIdx+1)+'/'+sadelesKesirler.length+'</div>'+
+          '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">'+
+            '<div style="text-align:center;min-width:70px">'+
+              '<div style="font-size:11px;color:var(--text2);margin-bottom:6px">Başlangıç</div>'+
+              '<div style="background:var(--bg2);border-radius:var(--r);padding:.75rem 1.25rem;display:inline-block">'+
+                '<div style="font-size:28px;font-weight:500;color:#993C1D;border-bottom:2px solid #993C1D;padding-bottom:4px;min-width:30px;text-align:center">'+k.pay+'</div>'+
+                '<div style="font-size:28px;font-weight:500;color:#185FA5;padding-top:4px;text-align:center">'+k.payda+'</div>'+
+              '</div>'+
+            '</div>'+
+            '<div style="text-align:center">'+
+              '<div style="font-size:12px;color:var(--text2);margin-bottom:8px">Ortak bölen seç:</div>'+
+              '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">'+
+                [2,3,4,5,6].map(function(n){
+                  var gecerli=k.pay%n===0&&k.payda%n===0&&n>1;
+                  return '<button onclick="sadeBolenSec('+n+')" style="padding:6px 12px;border-radius:var(--r);border:1.5px solid '+(gecerli?'var(--green)':'var(--border2)')+';background:'+(gecerli?'var(--green-bg)':'var(--bg)')+';color:'+(gecerli?'var(--green-text)':'var(--text3)')+';font-size:13px;font-weight:500;cursor:'+(gecerli?'pointer':'default')+'">÷'+n+'</button>';
+                }).join('')+
+              '</div>'+
+            '</div>'+
+            '<div style="text-align:center;min-width:70px" id="sade-sonuc">'+
+              '<div style="font-size:11px;color:var(--text2);margin-bottom:6px">Sonuç</div>'+
+              '<div style="background:var(--bg2);border-radius:var(--r);padding:.75rem 1.25rem;display:inline-block;opacity:0.3">'+
+                '<div style="font-size:28px;font-weight:500;color:var(--green-text);border-bottom:2px solid var(--green);padding-bottom:4px;min-width:30px;text-align:center">?</div>'+
+                '<div style="font-size:28px;font-weight:500;color:var(--green-text);padding-top:4px;text-align:center">?</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          '<div id="sade-acik" class="bilgi-kutu" style="margin-top:12px;min-height:40px">Yeşil bordürlü bölenlerden birini seç!</div>'+
+          '<div style="display:flex;gap:8px;margin-top:10px">'+
+            '<button onclick="sadeGoster()" class="btn" style="flex:1">Yenile</button>'+
+            '<button onclick="sadeIdx=(sadeIdx+1)%'+sadelesKesirler.length+';sadeGoster()" class="btn btn-primary" style="flex:1">Sonraki Örnek →</button>'+
+          '</div>'+
+        '</div>';
+    }
+    window.sadeBolenSec=function(n){
+      var k=sadelesKesirler[sadeIdx];
+      var a=k.adimlar[0];
+      if(k.pay%n!==0||k.payda%n!==0){
+        document.getElementById('sade-acik').textContent='❌ '+n+', hem '+k.pay+'i hem de '+k.payda+'yi tam bolemiyor. Baska bir sayi dene.';
+        return;
+      }
+      var yeniPay=k.pay/n, yeniPayda=k.payda/n;
+      var sonucEl=document.getElementById('sade-sonuc');
+      var sadeHal=yeniPay===a.yeniPay&&yeniPayda===a.yeniPayda;
+      sonucEl.innerHTML=
+        '<div style="font-size:11px;color:var(--green-text);margin-bottom:6px">Sonuç ✓</div>'+
+        '<div style="background:var(--green-bg);border-radius:var(--r);padding:.75rem 1.25rem;display:inline-block">'+
+          '<div style="font-size:28px;font-weight:500;color:var(--green-text);border-bottom:2px solid var(--green);padding-bottom:4px;text-align:center">'+yeniPay+'</div>'+
+          '<div style="font-size:28px;font-weight:500;color:var(--green-text);padding-top:4px;text-align:center">'+yeniPayda+'</div>'+
+        '</div>';
+      document.getElementById('sade-acik').textContent=
+        k.pay+'÷'+n+'='+yeniPay+', '+k.payda+'÷'+n+'='+yeniPayda+
+        (sadeHal?' → ✓ En sade hâl! '+k.pay+'/'+k.payda+' = '+yeniPay+'/'+yeniPayda :
+        ' → Doğru ama daha da sadeleştirilebilir. '+(yeniPay)+'/'+yeniPayda+' → ortak bölen var mı?');
+    };
+    sadeGoster();
     var kesirler=[{k:'1/2',v:50},{k:'1/3',v:33},{k:'2/3',v:67},{k:'1/4',v:25},{k:'3/4',v:75}];
     var html='<div style="display:flex;flex-direction:column;gap:8px">';
     kesirler.forEach(function(x){
@@ -855,6 +965,12 @@ var DERSLER=[
       '</div>'+
     '</div>'+
     '<div class="bolum">'+
+      '<h3>Ondalıklı sayıları karşılaştırma</h3>'+
+      '<p>İki ondalıklı sayıyı karşılaştırırken <strong>soldan sağa basamak basamak</strong> karşılaştır:</p>'+
+      '<div class="adim-kutu">Adım 1: Tam kısımları karşılaştır (büyükse o sayı büyüktür)<br>Adım 2: Eşitse virgülden sonra ilk haneye bak<br>Adım 3: Yine eşitse bir sonraki haneye geç</div>'+
+      '<div class="ornek-kutu">0,9 ile 0,09 karşılaştır:<br>Tam kısım: 0 = 0 (eşit)<br>Onda birler: 9 > 0 → 0,9 BÜYÜK</div>'+
+      '<div class="bilgi-kutu">İpucu: Eşit sayıda basamak için sona sıfır ekle. 0,9 = 0,90 → 0,90 > 0,09 açıkça görülür.</div>'+
+    '</div>'+    '<div class="bolum">'+
       '<h3>Ondalıklı sayı doğrusu</h3>'+
       '<p>Ondalıklı sayılar tam sayılar arasında konumlanır. Kaydır, gör:</p>'+
       '<input type="range" id="od-slider" min="0" max="500" value="250" style="width:100%;margin:.5rem 0" oninput="odSlider(this.value)">'+
@@ -959,7 +1075,14 @@ var DERSLER=[
         '</div>'+
         '<div id="ind-adimlar" class="adim-kutu" style="margin-top:12px"></div>'+
       '</div>'+
-    '</div></div>';
+    '<div class="bolum">'+
+      '<h3>Yüzde artış ve azalış</h3>'+
+      '<p>İki farklı işlem var: <strong>artış</strong> (zam) ve <strong>azalış</strong> (indirim). Her ikisi de aynı formülle hesaplanır.</p>'+
+      '<div class="adim-kutu">Artış miktarı = Başlangıç × Oran ÷ 100<br>Yeni değer (artış) = Başlangıç + Artış miktarı<br>Yeni değer (azalış) = Başlangıç - Azalış miktarı</div>'+
+      '<div class="ornek-kutu">100 TL&#39;ye %20 ZAM: 100 × 20 ÷ 100 = 20 TL → yeni fiyat: 120 TL</div>'+
+      '<div class="ornek-kutu">100 TL&#39;ye %20 İNDİRİM: 100 × 20 ÷ 100 = 20 TL → yeni fiyat: 80 TL</div>'+
+      '<div class="bilgi-kutu">Dikkat: %20 zam sonra %20 indirim yapılırsa başa dönülmez! 100→120→96 olur.</div>'+
+    '</div>'+    '</div></div>';
   },
   anlatimKurulum:function(){
     function yuzdeGuncelle(v){
